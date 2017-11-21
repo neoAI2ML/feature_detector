@@ -7,11 +7,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "_index", "_type", "_id", "_score", "_source", "fields" })
-public class RespHit extends FeatureObject {
+public class RespHit extends FeatureDetectObject {
 	private static final long serialVersionUID = -3579994062552290272L;
 
 	@JsonProperty("_index")

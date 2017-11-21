@@ -14,11 +14,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "took", "time_out", "_shards", "hits" , "_scroll_id"})
-public class MatchResponse extends FeatureObject {
+public class MatchResponse extends FeatureDetectObject {
 	private static final long serialVersionUID = 109806908173306794L;
 	private static final Logger logger = LoggerFactory
 			.getLogger(MatchResponse.class);

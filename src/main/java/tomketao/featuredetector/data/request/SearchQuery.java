@@ -4,11 +4,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "bool" })
-public class SearchQuery extends FeatureObject {
+public class SearchQuery extends FeatureDetectObject {
 	private static final long serialVersionUID = 8813985139034421899L;
 
 	@JsonProperty("bool")

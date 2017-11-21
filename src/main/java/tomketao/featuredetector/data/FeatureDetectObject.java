@@ -8,7 +8,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import tomketao.featuredetector.util.CommonUtils;
 
-public class FeatureObject implements Serializable {
+public class FeatureDetectObject implements Serializable {
 	private static final long serialVersionUID = -1423059275993741072L;
 
 	@Override

@@ -12,11 +12,11 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "explain", "from", "size", "min_score", "query", "fields" })
-public class SearchRequest extends FeatureObject {
+public class SearchRequest extends FeatureDetectObject {
 	private static final long serialVersionUID = -5688399685346629369L;
 
 	@JsonProperty("explain")

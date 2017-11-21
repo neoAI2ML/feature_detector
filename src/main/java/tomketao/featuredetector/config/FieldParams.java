@@ -7,11 +7,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "confident", "tokenizers", "query_join" })
-public class FieldParams extends FeatureObject {
+public class FieldParams extends FeatureDetectObject {
 	private static final long serialVersionUID = -4060756715983589644L;
 
 	@JsonProperty("confident")

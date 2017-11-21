@@ -9,11 +9,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "must", "should", "minimum_should_match" })
-public class BooleanQuery extends FeatureObject {
+public class BooleanQuery extends FeatureDetectObject {
 	private static final long serialVersionUID = 3340535477887504569L;
 
 	@JsonProperty("must")

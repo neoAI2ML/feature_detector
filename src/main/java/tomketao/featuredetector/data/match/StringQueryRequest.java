@@ -14,11 +14,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "explain", "size", "from", "min_score", "query", "fields" })
-public class StringQueryRequest extends FeatureObject {
+public class StringQueryRequest extends FeatureDetectObject {
 	private static final long serialVersionUID = -2210672071719579883L;
 	private static final Logger logger = LoggerFactory
 			.getLogger(StringQueryRequest.class);

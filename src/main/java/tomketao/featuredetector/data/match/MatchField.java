@@ -6,11 +6,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "field", "value", "cleaners", "high", "low", "comparator" })
-public class MatchField extends FeatureObject {
+public class MatchField extends FeatureDetectObject {
 	private static final long serialVersionUID = -5203821613792804310L;
 
 	@JsonProperty("field")

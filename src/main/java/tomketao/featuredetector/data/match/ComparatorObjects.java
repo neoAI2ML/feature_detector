@@ -4,11 +4,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"object"})
-public class ComparatorObjects extends FeatureObject {
+public class ComparatorObjects extends FeatureDetectObject {
 	private static final long serialVersionUID = 149277127542521602L;
 	
 	@JsonProperty("object")

@@ -4,11 +4,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "script_score", "weight" })
-public class MatchScriptScoreFunction extends FeatureObject {
+public class MatchScriptScoreFunction extends FeatureDetectObject {
 	private static final long serialVersionUID = -5929090392924086337L;
 
 	@JsonProperty("script_score")

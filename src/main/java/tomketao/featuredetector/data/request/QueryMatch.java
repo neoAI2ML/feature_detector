@@ -6,11 +6,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "match" })
-public class QueryMatch extends FeatureObject {
+public class QueryMatch extends FeatureDetectObject {
 	private static final long serialVersionUID = -7005117986841090874L;
 
 	@JsonProperty("match")

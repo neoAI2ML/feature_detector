@@ -15,7 +15,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import tomketao.featuredetector.data.FeatureObject;
+import tomketao.featuredetector.data.FeatureDetectObject;
 import tomketao.featuredetector.data.response.RespHit;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,7 +24,7 @@ import tomketao.featuredetector.data.response.RespHit;
 		"qualification_score", "groupid_field", "rulesets", "back_fill",
 		"new_group", "time_stamp", "rejected_flag", "disqualified_fill",
 		"skip_grouped" })
-public class MatchConfig extends FeatureObject {
+public class MatchConfig extends FeatureDetectObject {
 	private static final long serialVersionUID = 2530337448945097752L;
 
 	@JsonProperty("param_fields")
