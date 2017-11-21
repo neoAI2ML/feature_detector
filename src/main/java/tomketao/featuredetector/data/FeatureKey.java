@@ -14,9 +14,9 @@ public class FeatureKey extends FieldParams {
 	public FeatureKey(String key, int seqNo) {
 		featureCounts = new HashMap<String, Object>();
 		String[] words = key.split(StaticConstants.SPACE);
-		featureCounts.put(StaticConstants.KEY, key);
-		featureCounts.put(StaticConstants.UPDATESEQ, seqNo);
-		featureCounts.put(StaticConstants.KEYHASHCODE, key.hashCode());
-		featureCounts.put(StaticConstants.KEYSIZE, words.length);
+		featureCounts.put(StaticConstants.FD_KEY, key);
+		featureCounts.put(StaticConstants.FD_SEQUENCE, seqNo);
+		featureCounts.put(StaticConstants.FD_KEY_HASHCODE, key.hashCode());
+		featureCounts.put(StaticConstants.FD_SIZE_IN_WORDS, words.length);
 	}
 }
