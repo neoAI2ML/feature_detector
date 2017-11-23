@@ -2,21 +2,35 @@ package tomketao.featuredetector.data;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import tomketao.featuredetector.config.FieldParams;
 import tomketao.featuredetector.util.StaticConstants;
 
-public class FeatureKey extends FieldParams {
-	private static final long serialVersionUID = -1661134457157895278L;
+public class FeatureKey extends FeatureDetectObject {
+	private static final long serialVersionUID = 6569937637133679136L;
+	
+	private String keyString;
+	private Map<String, Integer> featureCounts;
 
-	private Map<String, Object> featureCounts;
-
-	public FeatureKey(String key, int seqNo) {
-		featureCounts = new HashMap<String, Object>();
-		String[] words = key.split(StaticConstants.SPACE);
-		featureCounts.put(StaticConstants.FD_KEY, key);
+	public FeatureKey(int hashCode, String key, int seqNo, int wordCount) {
+		setKeyString(key);
+		featureCounts = new HashMap<String, Integer>();
 		featureCounts.put(StaticConstants.FD_SEQUENCE, seqNo);
-		featureCounts.put(StaticConstants.FD_KEY_HASHCODE, key.hashCode());
-		featureCounts.put(StaticConstants.FD_SIZE_IN_WORDS, words.length);
+		featureCounts.put(StaticConstants.FD_KEY_HASHCODE, hashCode);
+		featureCounts.put(StaticConstants.FD_SIZE_IN_WORDS, wordCount);
+	}
+
+	public Map<String, Integer> getFeatureCounts() {
+		return featureCounts;
+	}
+
+	public void setFeatureCounts(Map<String, Integer> featureCounts) {
+		this.featureCounts = featureCounts;
+	}
+
+	public String getKeyString() {
+		return keyString;
+	}
+
+	public void setKeyString(String keyString) {
+		this.keyString = keyString;
 	}
 }
