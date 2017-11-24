@@ -1,12 +1,19 @@
 package tomketao.featuredetector.training;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import tomketao.featuredetector.data.FeatureKnowledge;
+import tomketao.featuredetector.data.TrainingSetting;
+import tomketao.featuredetector.util.MapReduceConfig;
 
 public class ScamTraningProcess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTraningProcess.class);
@@ -14,11 +21,25 @@ public class ScamTraningProcess {
 	static String delimiter = "\t";
 	static FeatureKnowledge knowledge = new FeatureKnowledge();
 	private static int seq = 0;
+	private static TrainingSetting trainingSetting = new TrainingSetting();
 
-	public static void main(String[] args) throws IOException {
-
-		InputStreamReader fileReader = new InputStreamReader(
-				ScamTraningProcess.class.getClassLoader().getResourceAsStream(dataFilename));
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+		if (args.length != 2) {
+			LOGGER.error("usage: ScamTraningProcess <config-path> <input.path>");
+			return;
+		}
+		
+		Configuration config = MapReduceConfig.loadConfiguration(args[0]);
+		delimiter = config.get("input.delimiter");
+		trainingSetting.setKeySize(config.getInt("key.size", 1));
+		trainingSetting.setKnowledgeLimit(config.getInt("knowledge.limit", 5000));
+		trainingSetting.setRareLimit(config.getInt("rare.limit", 1));
+		trainingSetting.setValidSeqRange(config.getInt("sequence.range", 2000));
+		trainingSetting.setMinimumImpact(config.getFloat("minimum.impact", (float) 0.01));
+				
+		
+		
+		FileReader fileReader = new FileReader(args[1]);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;
 
@@ -36,6 +57,8 @@ public class ScamTraningProcess {
 		}
 
 		// Always close files.
+		LOGGER.info("Knowledge Base Size: " + knowledge.size());
+		fileReader.close();
 		bufferedReader.close();
 	}
 
