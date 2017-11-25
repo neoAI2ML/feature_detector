@@ -15,8 +15,8 @@ import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
 import tomketao.featuredetector.util.MapReduceConfig;
 
-public class ScamTraningProcess {
-	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTraningProcess.class);
+public class ScamTrainingProcess {
+	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTrainingProcess.class);
 	static String dataFilename = "scam-training";
 	private static String delimiter = "\t";
 	static FeatureKnowledge knowledge = new FeatureKnowledge();
@@ -36,9 +36,7 @@ public class ScamTraningProcess {
 		trainingSetting.setRareLimit(config.getInt("rare.limit", 1));
 		trainingSetting.setValidSeqRange(config.getInt("sequence.range", 2000));
 		trainingSetting.setMinimumImpact(config.getFloat("minimum.impact", (float) 0.01));
-				
-		
-		
+
 		FileReader fileReader = new FileReader(args[1]);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;
