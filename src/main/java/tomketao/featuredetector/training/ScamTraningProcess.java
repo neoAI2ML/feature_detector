@@ -57,9 +57,15 @@ public class ScamTraningProcess {
 		}
 
 		// Always close files.
-		LOGGER.info("Knowledge Base Size: " + knowledge.size());
 		fileReader.close();
 		bufferedReader.close();
+		
+		// before alignment
+		LOGGER.info("Knowledge Base Size before alignment: " + knowledge.size());
+		
+		//after alignment
+		knowledge.alignment(trainingSetting);
+		LOGGER.info("Knowledge Base Size after alignment: " + knowledge.size());
 	}
 
 }

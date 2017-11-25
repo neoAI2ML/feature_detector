@@ -1,9 +1,12 @@
 package tomketao.featuredetector.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import tomketao.featuredetector.util.StaticConstants;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
@@ -17,15 +20,16 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		currentSequence = sequence;
 		currentSampleCount++;
 		Integer featureCount = currentFeatureCount.get(feature);
-		if(featureCount == null) {
+		if (featureCount == null) {
 			currentFeatureCount.put(feature, 1);
 		} else {
 			currentFeatureCount.put(feature, featureCount + 1);
 		}
-		
+
 		// update knowledge base feature keys
 		String featureDataNormalized = StringUtils.normalizeSpace(featureData);
-		String[] keyWordList = featureDataNormalized.split(StaticConstants.SPACE);
+		String[] keyWordList = featureDataNormalized
+				.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
 
 		for (int i = 0; i < keyWordList.length; i++) {
@@ -33,16 +37,20 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 			addKeyFlag = put_feature_key(keyone, feature, sequence, 1);
 
 			if (i + 1 < keyWordList.length) {
-				String keytwo = keyone + StaticConstants.SPACE + wordNormalizer(keyWordList[i + 1]);
+				String keytwo = keyone + StaticConstants.SPACE
+						+ wordNormalizer(keyWordList[i + 1]);
 				addKeyFlag = put_feature_key(keytwo, feature, sequence, 2);
 
 				if (i + 2 < keyWordList.length) {
-					String keythree = keytwo + StaticConstants.SPACE + wordNormalizer(keyWordList[i + 2]);
+					String keythree = keytwo + StaticConstants.SPACE
+							+ wordNormalizer(keyWordList[i + 2]);
 					addKeyFlag = put_feature_key(keythree, feature, sequence, 3);
 
 					if (i + 3 < keyWordList.length) {
-						String keyfour = keythree + StaticConstants.SPACE + wordNormalizer(keyWordList[i + 3]);
-						addKeyFlag = put_feature_key(keyfour, feature, sequence, 4);
+						String keyfour = keythree + StaticConstants.SPACE
+								+ wordNormalizer(keyWordList[i + 3]);
+						addKeyFlag = put_feature_key(keyfour, feature,
+								sequence, 4);
 					}
 				}
 			}
@@ -51,7 +59,8 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		return addKeyFlag;
 	}
 
-	private boolean put_feature_key(String key, String feature, int sequence, int sizeInWords) {
+	private boolean put_feature_key(String key, String feature, int sequence,
+			int sizeInWords) {
 		int hashCode = key.hashCode();
 		boolean newKeyFlag = true;
 		FeatureKey ft_key = this.get(hashCode);
@@ -63,7 +72,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		} else {
 			newKeyFlag = false;
 			Map<String, Integer> featureCounts = ft_key.getFeatureCounts();
-			featureCounts.put(StaticConstants.FD_SEQUENCE, sequence);
+			ft_key.setUpdateSeqNo(sequence);
 			if (featureCounts.get(feature) != null) {
 				featureCounts.put(feature, featureCounts.get(feature) + 1);
 			} else {
@@ -73,9 +82,33 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 
 		return newKeyFlag;
 	}
-	
+
 	private String wordNormalizer(String word) {
-		
+
 		return word;
+	}
+
+	public void alignment(TrainingSetting trainingSetting) {
+		remove_rare(trainingSetting);
+	}
+
+	private void remove_rare(TrainingSetting trainingSetting) {
+		List<Integer> rareList = new ArrayList<Integer>();
+		for (Integer item : this.keySet()) {
+			Integer updateSeq = this.get(item).getUpdateSeqNo();
+			if (updateSeq + trainingSetting.getValidSeqRange() < currentSequence) {
+				if (this.get(item).getSumOfFTCount() < trainingSetting.getRareLimit()) {
+					rareList.add(item);
+				}
+			}
+		}
+
+		for (Integer rareItem : rareList) {
+			this.remove(rareItem);
+		}
+	}
+
+	private void remove_key_wo_impact(TrainingSetting trainingSetting) {
+
 	}
 }
