@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import tomketao.featuredetector.data.FeatureDetectObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "field", "value", "cleaners", "high", "low", "comparator" })
+@JsonPropertyOrder({ "field", "value", "high", "low", "comparator" })
 public class MatchField extends FeatureDetectObject {
 	private static final long serialVersionUID = -5203821613792804310L;
 
@@ -18,9 +18,6 @@ public class MatchField extends FeatureDetectObject {
 
 	@JsonProperty("value")
 	private String value;
-
-	@JsonProperty("cleaners")
-	private ArrayList<FieldCleaner> cleaners;
 
 	@JsonProperty("high")
 	private double high;
@@ -37,10 +34,6 @@ public class MatchField extends FeatureDetectObject {
 
 	public String getValue() {
 		return value;
-	}
-
-	public ArrayList<FieldCleaner> getCleaners() {
-		return cleaners;
 	}
 
 	public double getHigh() {
@@ -61,10 +54,6 @@ public class MatchField extends FeatureDetectObject {
 
 	public void setValue(String value) {
 		this.value = value;
-	}
-
-	public void setCleaners(ArrayList<FieldCleaner> cleaners) {
-		this.cleaners = cleaners;
 	}
 
 	public void setHigh(double high) {

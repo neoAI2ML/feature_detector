@@ -17,7 +17,6 @@ import tomketao.featuredetector.util.MapReduceConfig;
 
 public class ScamTrainingProcess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTrainingProcess.class);
-	static String dataFilename = "scam-training";
 	private static String delimiter = "\t";
 	static FeatureKnowledge knowledge = new FeatureKnowledge();
 	private static int seq = 0;
