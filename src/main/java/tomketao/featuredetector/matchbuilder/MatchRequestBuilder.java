@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,11 +15,9 @@ import org.slf4j.LoggerFactory;
 import tomketao.featuredetector.config.FieldParams;
 import tomketao.featuredetector.config.MatchConfig;
 import tomketao.featuredetector.config.MatchRuleset;
-import tomketao.featuredetector.data.match.MatchField;
 import tomketao.featuredetector.data.match.MatchFunctionScore;
 import tomketao.featuredetector.data.match.MatchFunctionScoreQuery;
 import tomketao.featuredetector.data.match.MatchRequest;
-import tomketao.featuredetector.data.match.MatchScriptScoreFunction;
 import tomketao.featuredetector.data.match.QueryString;
 import tomketao.featuredetector.data.match.StringQueryRequest;
 import tomketao.featuredetector.data.request.UpdateRequest;
@@ -282,13 +279,6 @@ public class MatchRequestBuilder {
 				qs.setQuery("*:*");
 			}
 
-			List<MatchScriptScoreFunction> functions = fs.getFunctions();
-			for (MatchScriptScoreFunction sf : functions) {
-				List<MatchField> matchFields = sf.getScript_score().getParams()
-						.getEntity().getFields();
-				updateDefaultRuleSetRules(matchFields, input);
-			}
-
 			requestPlacehold.setMin_score(Double.toString(matchConfig
 					.getQualification_score()));
 		}
@@ -404,28 +394,6 @@ public class MatchRequestBuilder {
 		return queryString;
 	}
 
-	private List<MatchField> updateDefaultRuleSetRules(
-			final List<MatchField> matchFields, Map<String, Object> input) {
-		List<MatchField> nullFields = new ArrayList<MatchField>();
-		for (MatchField mf : matchFields) {
-			String fieldName = StringUtils.strip(mf.getValue(), "{}");
-			Object inputFieldValueObj = input.get(fieldName);
-			if (inputFieldValueObj != null) {
-				String inputFieldValue = inputFieldValueObj.toString();
-				if (StringUtils.isNotBlank(inputFieldValue)) {
-					mf.setValue(inputFieldValue);
-				} else {
-					nullFields.add(mf);
-				}
-			} else {
-				nullFields.add(mf);
-			}
-		}
-		matchFields.removeAll(nullFields);
-
-		return matchFields;
-	}
-
 	public MatchRequest buildMatchRequest(Map<String, Object> input, String key) {
 		MatchRequest requestPlacehold = (MatchRequest) DeepClone
 				.deepClone(getRequestTemplate(key));
@@ -443,56 +411,10 @@ public class MatchRequestBuilder {
 				qs.setQuery("*:*");
 			}
 
-			List<MatchScriptScoreFunction> functions = fs.getFunctions();
-			List<MatchScriptScoreFunction> needRemovedfunctions = new ArrayList<MatchScriptScoreFunction>();
-			for (MatchScriptScoreFunction sf : functions) {
-				List<MatchField> matchFields = sf.getScript_score().getParams()
-						.getEntity().getFields();
-				boolean ruleStatus = updateRuleSetRules(matchFields, input);
-				if (!ruleStatus) {
-					needRemovedfunctions.add(sf);
-				}
-			}
-			functions.removeAll(needRemovedfunctions);
 			requestPlacehold.setMin_score(Double.toString(matchConfig
 					.getQualification_score()));
-			if (functions.isEmpty()) {
-				return null;
-			}
 		}
 		return requestPlacehold;
-	}
-
-	private boolean updateRuleSetRules(final List<MatchField> matchFields,
-			Map<String, Object> input) {
-		boolean ruleStatus = true;
-		List<MatchField> nullFields = new ArrayList<MatchField>();
-		for (MatchField mf : matchFields) {
-			String fieldName = StringUtils.strip(mf.getValue(), "{}");
-			Object inputFieldValueObj = input.get(fieldName);
-			if (inputFieldValueObj != null) {
-				String inputFieldValue = inputFieldValueObj.toString();
-				if (StringUtils.isNotBlank(inputFieldValue)) {
-					mf.setValue(inputFieldValue);
-				} else {
-					if (matchConfig.getBlank_is_match_fields().contains(
-							fieldName)) {
-						nullFields.add(mf);
-					} else {
-						ruleStatus = false;
-					}
-				}
-			} else {
-				if (matchConfig.getBlank_is_match_fields().contains(fieldName)) {
-					nullFields.add(mf);
-				} else {
-					ruleStatus = false;
-				}
-			}
-		}
-		matchFields.removeAll(nullFields);
-
-		return ruleStatus;
 	}
 
 	public static String createQueryString(String field, String value,
