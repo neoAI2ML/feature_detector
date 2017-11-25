@@ -1,6 +1,7 @@
 package tomketao.featuredetector.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,18 +13,32 @@ import org.apache.commons.lang3.StringUtils;
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
 	private int currentSequence;
-	private int currentSampleCount;
 	private Map<String, Integer> currentFeatureCount = new HashMap<String, Integer>();
 
+	public int getCurrentSequence() {
+		return currentSequence;
+	}
+
+	public void setCurrentSequence(int currentSequence) {
+		this.currentSequence = currentSequence;
+	}
+
+	public Map<String, Integer> getCurrentFeatureCount() {
+		return currentFeatureCount;
+	}
+
+	public void setCurrentFeatureCount(Map<String, Integer> currentFeatureCount) {
+		this.currentFeatureCount = currentFeatureCount;
+	}
+	
 	public boolean put_feature(String feature, String featureData, int sequence) {
 		// update knowledge base global variables
-		currentSequence = sequence;
-		currentSampleCount++;
-		Integer featureCount = currentFeatureCount.get(feature);
+		setCurrentSequence(sequence);
+		Integer featureCount = getCurrentFeatureCount().get(feature);
 		if (featureCount == null) {
-			currentFeatureCount.put(feature, 1);
+			getCurrentFeatureCount().put(feature, 1);
 		} else {
-			currentFeatureCount.put(feature, featureCount + 1);
+			getCurrentFeatureCount().put(feature, featureCount + 1);
 		}
 
 		// update knowledge base feature keys
@@ -90,14 +105,15 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 
 	public void alignment(TrainingSetting trainingSetting) {
 		remove_rare(trainingSetting);
+		remove_key_wo_impact(trainingSetting);
 	}
 
 	private void remove_rare(TrainingSetting trainingSetting) {
 		List<Integer> rareList = new ArrayList<Integer>();
 		for (Integer item : this.keySet()) {
 			Integer updateSeq = this.get(item).getUpdateSeqNo();
-			if (updateSeq + trainingSetting.getValidSeqRange() < currentSequence) {
-				if (this.get(item).getSumOfFTCount() < trainingSetting.getRareLimit()) {
+			if (updateSeq + trainingSetting.getValidSeqRange() < getCurrentSequence()) {
+				if (this.get(item).getSumOfFTCounts() < trainingSetting.getRareLimit()) {
 					rareList.add(item);
 				}
 			}
@@ -109,6 +125,48 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	}
 
 	private void remove_key_wo_impact(TrainingSetting trainingSetting) {
-
+		List<Integer> listWOImpact = new ArrayList<Integer>();
+		for(Integer keyItem : this.keySet()) {
+			List<Float> probList = new ArrayList<Float>();
+			for(String ft : getCurrentFeatureCount().keySet()) {
+				probList.add(keyFeatureProbality(ft, this.get(keyItem).getFeatureCounts(), getCurrentFeatureCount()));
+			}
+			
+			if(maximumDifference(probList) < trainingSetting.getMinimumImpact()) {
+				listWOImpact.add(keyItem);
+			}
+		}
+		
+		for(Integer rmKeyitem : listWOImpact) {
+			this.remove(rmKeyitem);
+		}
+	}
+	
+	private float maximumDifference(List<Float> dList) {
+		Collections.sort(dList);
+		return dList.get(dList.size() - 1) - dList.get(0);
+	}
+	
+	public float keyFeatureProbality(String feature, Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
+		float divisor = 0;
+		float dividend = 0;
+		float averageGlobalFTCount = FeatureKey.getSumOfFTCounts(globalFeatureCount) / globalFeatureCount.size();
+		for(String ft : globalFeatureCount.keySet()) {
+			Integer cur = keyFeatureCount.get(ft);
+			float current = cur == null ? 0 : cur;
+			for(String ft_again : globalFeatureCount.keySet()) {
+				if(!StringUtils.equals(ft, feature)) {
+					current = current * globalFeatureCount.get(ft_again) / averageGlobalFTCount;
+				}
+			}
+			
+			if(StringUtils.equals(ft, feature)) {
+				dividend = current;
+			}
+			
+			divisor = divisor + current;
+		}
+		
+		return dividend / divisor;
 	}
 }

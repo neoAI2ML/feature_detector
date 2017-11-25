@@ -60,9 +60,13 @@ public class FeatureKey extends FeatureDetectObject {
 		this.sizeInword = sizeInword;
 	}
 	
-	public int getSumOfFTCount() {
+	public int getSumOfFTCounts() {
+		return getSumOfFTCounts(featureCounts);
+	}
+	
+	public static int getSumOfFTCounts(Map<String, Integer> ftCounts) {
 		int sum_of_ft_count = 0;
-		for (Integer ft_count : featureCounts.values()) {
+		for (Integer ft_count : ftCounts.values()) {
 			sum_of_ft_count = sum_of_ft_count + ft_count;
 		}
 		

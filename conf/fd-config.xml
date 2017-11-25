@@ -20,7 +20,7 @@
 	</property>
 	<property>
           <name>minimum.impact</name>
-           <value>0.05</value>
+           <value>0.4</value>
 	</property>
 	<property>
 		<name>input.delimiter</name>
