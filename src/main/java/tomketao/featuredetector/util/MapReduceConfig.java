@@ -47,8 +47,7 @@ public class MapReduceConfig {
 						.getElementsByTagName("value");
 				Element propertyValueElement = (Element) propertyValue.item(0);
 				NodeList textValueList = propertyValueElement.getChildNodes();
-				String propertyValueString = ((Node) textValueList.item(0)).getNodeValue()
-						.trim();
+				String propertyValueString = ((Node) textValueList.item(0)).getNodeValue();
 //				System.out.println("value : " + propertyValueString);
 				// ------
 				

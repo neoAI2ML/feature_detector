@@ -10,7 +10,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
 	private int currentSequence;
 	private int currentSampleCount;
-	private Map<String, Integer> currentFeatureCount;
+	private Map<String, Integer> currentFeatureCount = new HashMap<String, Integer>();
 
 	public boolean put_feature(String feature, String featureData, int sequence) {
 		// update knowledge base global variables
