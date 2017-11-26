@@ -12,7 +12,7 @@
 	</property>
 	<property>
           <name>rare.limit</name>
-           <value>2</value>
+           <value>3</value>
 	</property>
 	<property>
           <name>knowledge.limit</name>
@@ -20,7 +20,7 @@
 	</property>
 	<property>
           <name>minimum.impact</name>
-           <value>0.4</value>
+           <value>0.8</value>
 	</property>
 	<property>
 		<name>input.delimiter</name>
