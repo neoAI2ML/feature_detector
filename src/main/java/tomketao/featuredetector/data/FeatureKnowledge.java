@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tomketao.featuredetector.util.CommonUtils;
 import tomketao.featuredetector.util.StaticConstants;
 
 import org.apache.commons.lang3.StringUtils;
@@ -129,7 +130,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		for(Integer keyItem : this.keySet()) {
 			List<Float> probList = new ArrayList<Float>();
 			for(String ft : getCurrentFeatureCount().keySet()) {
-				probList.add(keyFeatureProbality(ft, this.get(keyItem).getFeatureCounts(), getCurrentFeatureCount()));
+				probList.add(CommonUtils.keyFeatureProbality(ft, this.get(keyItem).getFeatureCounts(), getCurrentFeatureCount()));
 			}
 			
 			if(maximumDifference(probList) < trainingSetting.getMinimumImpact()) {
@@ -147,26 +148,5 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		return dList.get(dList.size() - 1) - dList.get(0);
 	}
 	
-	public float keyFeatureProbality(String feature, Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
-		float divisor = 0;
-		float dividend = 0;
-		float averageGlobalFTCount = FeatureKey.getSumOfFTCounts(globalFeatureCount) / globalFeatureCount.size();
-		for(String ft : globalFeatureCount.keySet()) {
-			Integer cur = keyFeatureCount.get(ft);
-			float current = cur == null ? 0 : cur;
-			for(String ft_again : globalFeatureCount.keySet()) {
-				if(!StringUtils.equals(ft, ft_again)) {
-					current = current * globalFeatureCount.get(ft_again) / averageGlobalFTCount;
-				}
-			}
-			
-			if(StringUtils.equals(ft, feature)) {
-				dividend = current;
-			}
-			
-			divisor = divisor + current;
-		}
-		
-		return dividend / divisor;
-	}
+
 }

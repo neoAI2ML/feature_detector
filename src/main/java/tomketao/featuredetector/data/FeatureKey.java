@@ -3,6 +3,8 @@ package tomketao.featuredetector.data;
 import java.util.HashMap;
 import java.util.Map;
 
+import tomketao.featuredetector.util.CommonUtils;
+
 public class FeatureKey extends FeatureDetectObject {
 	private static final long serialVersionUID = 6569937637133679136L;
 	
@@ -61,15 +63,6 @@ public class FeatureKey extends FeatureDetectObject {
 	}
 	
 	public int getSumOfFTCounts() {
-		return getSumOfFTCounts(featureCounts);
-	}
-	
-	public static int getSumOfFTCounts(Map<String, Integer> ftCounts) {
-		int sum_of_ft_count = 0;
-		for (Integer ft_count : ftCounts.values()) {
-			sum_of_ft_count = sum_of_ft_count + ft_count;
-		}
-		
-		return sum_of_ft_count;
+		return CommonUtils.getSumOfFTCounts(featureCounts);
 	}
 }

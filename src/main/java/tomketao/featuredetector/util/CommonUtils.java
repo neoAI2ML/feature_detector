@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -104,5 +107,47 @@ public class CommonUtils {
 		} catch (UnsupportedEncodingException e) {
 			return requestString;
 		}
+	}
+	
+	public static int getSumOfFTCounts(Map<String, Integer> ftCounts) {
+		int sum_of_ft_count = 0;
+		for (Integer ft_count : ftCounts.values()) {
+			sum_of_ft_count = sum_of_ft_count + ft_count;
+		}
+		
+		return sum_of_ft_count;
+	}
+	
+	public static float getSumOfFTAdjustedCounts(Map<String, Float> ftCounts) {
+		Float sum_of_ft_count = (float) 0.0;
+		for (Float ft_count : ftCounts.values()) {
+			sum_of_ft_count = sum_of_ft_count + ft_count;
+		}
+		
+		return sum_of_ft_count;
+	}
+	
+	public static float keyFeatureProbality(String feature, Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
+		Map<String, Float> adjusted = adjustedFeatureCounts(keyFeatureCount, globalFeatureCount);
+		return adjusted.get(feature) / getSumOfFTAdjustedCounts(adjusted);
+	}
+	
+	public static Map<String, Float> adjustedFeatureCounts(Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
+		Map<String, Float> adjusted = new HashMap<String, Float>();
+		float averageGlobalFTCount = getSumOfFTCounts(globalFeatureCount) / globalFeatureCount.size();
+		
+		for(String ft : globalFeatureCount.keySet()) {
+			Integer cur = keyFeatureCount.get(ft);
+			float current = cur == null ? 0 : cur;
+			for(String ft_again : globalFeatureCount.keySet()) {
+				if(!StringUtils.equals(ft, ft_again)) {
+					current = current * globalFeatureCount.get(ft_again) / averageGlobalFTCount;
+				}
+			}
+			
+			adjusted.put(ft, current);
+		}
+		
+		return adjusted;
 	}
 }
