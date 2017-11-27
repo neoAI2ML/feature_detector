@@ -3,13 +3,8 @@ package tomketao.featuredetector.training;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
 
@@ -19,7 +14,7 @@ public class ScamTrainingProcess {
 	private static int seq = 0;
 	private static TrainingSetting trainingSetting;
 
-	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+	public static void main(String[] args) throws IOException {
 		if (args.length != 2) {
 			LOGGER.error("usage: ScamTraningProcess <config-path> <input.path>");
 			return;
