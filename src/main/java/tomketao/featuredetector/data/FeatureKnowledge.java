@@ -19,7 +19,7 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
 	
-	@JsonProperty("keyString")
+	@JsonProperty("currentSequence")
 	private int currentSequence;
 	
 	@JsonProperty("currentFeatureCount")
