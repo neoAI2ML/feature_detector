@@ -10,10 +10,19 @@ import tomketao.featuredetector.util.CommonUtils;
 import tomketao.featuredetector.util.StaticConstants;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({ "currentSequence", "currentFeatureCount" })
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
+	
+	@JsonProperty("keyString")
 	private int currentSequence;
+	
+	@JsonProperty("currentFeatureCount")
 	private Map<String, Integer> currentFeatureCount = new HashMap<String, Integer>();
 
 	public int getCurrentSequence() {
