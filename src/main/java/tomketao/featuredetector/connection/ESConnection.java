@@ -207,62 +207,6 @@ public class ESConnection {
 		return matchResponse;
 	}
 
-//	public boolean createIndexTypeMapping(ConsolidateConfig cconfig,
-//			String indexName, String typeName) {
-//		String mappingUrl = this.server + "/" + indexName;
-//		String indexTypeUrl = mappingUrl + "/" + typeName;
-//		CloseableHttpResponse response = null;
-//
-//		// Create the httpClient
-//		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-//		HttpHead request = new HttpHead(indexTypeUrl);
-//
-//		try {
-//			// Execute the httpClient to check if the index type exists or not
-//			response = httpClient.execute(request);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		if (response.getStatusLine().getStatusCode() == 200) {
-//			return false;
-//		} else {
-//			logger.info("Query index type mapping failed : HTTP error code : "
-//					+ response.getStatusLine().getStatusCode());
-//			HttpPut putRequest = new HttpPut(mappingUrl);
-//			try {
-//				String jsonString = cconfig.createIndexTypeMapping(typeName)
-//						.convertToString();
-//				putRequest.setEntity(new StringEntity(jsonString));
-//			} catch (UnsupportedEncodingException e) {
-//				logger.info(e.getMessage());
-//			}
-//			putRequest.setHeader("Content-Type", "application/json");
-//
-//			try {
-//				// Execute the httpClient to create the index type and its
-//				// mapping
-//				response = httpClient.execute(putRequest);
-//			} catch (Exception e) {
-//				logger.info(e.getMessage());
-//			}
-//
-//			if (response.getStatusLine().getStatusCode() != 200) {
-//				logger.info("Failed : HTTP error code : "
-//						+ response.getStatusLine().getStatusCode());
-//				return false;
-//			}
-//		}
-//
-//		try {
-//			response.close();
-//		} catch (IOException e) {
-//			logger.error(e.getMessage());
-//		}
-//
-//		return true;
-//	}
-
 	public MatchResponse indexing(String id, Map<String, Object> rec) {
 		if(StringUtils.isBlank(id)) {
 			return null;
