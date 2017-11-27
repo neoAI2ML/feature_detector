@@ -44,18 +44,25 @@ public class ESConnection {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ESConnection.class);
 	private String server;
-	private String index;
-	private String type;
+	private String storeUrl;
 	//private String scrollTimeout;
 	private final int RETRY_COUNT = 3;
 	public static final String MAPPING_NODE = "properties";
 
 	private final FDHttpClientConnectionPool pool = new FDHttpClientConnectionPoolImpl(20, 10);
 
-	public ESConnection(String server, String index, String type) {
-		this.server = server;
-		this.index = index;
-		this.type = type;
+	public ESConnection(String storeUrl) {
+		setStoreUrl(storeUrl);
+		int indexOfFirstSlash = getStoreUrl().indexOf('/', 0);
+		this.server = getStoreUrl().substring(0, indexOfFirstSlash);
+	}
+
+	public String getStoreUrl() {
+		return storeUrl;
+	}
+
+	public void setStoreUrl(String storeUrl) {
+		this.storeUrl = storeUrl;
 	}
 
 	public String getServer() {
@@ -66,32 +73,12 @@ public class ESConnection {
 		this.server = server;
 	}
 
-	public String getIndex() {
-		return index;
-	}
-
-	public void setIndex(String index) {
-		this.index = index;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	private String serverUrl() {
-		return this.server + "/" + this.index + "/" + this.type;
-	}
-
 	private String searchUrl() {
-		return serverUrl() + "/_search";
+		return getStoreUrl() + "/_search";
 	}
 	
 	private String scrollUrl() {
-		return this.server + "/_search/scroll";
+		return getServer() + "/_search/scroll";
 	}
 	
 	public MatchResponse scrollNext(MatchResponse previousResp, String timeout, String sizeStr) {
@@ -208,7 +195,7 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			HttpPut putRequest = new HttpPut(serverUrl() + "/" + id);
+			HttpPut putRequest = new HttpPut(getStoreUrl() + "/" + id);
 
 			putRequest.setEntity(new StringEntity(RequestBuilder
 					.buildIndexRequest(rec).convertToString()));
@@ -274,7 +261,7 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			HttpPost postRequest = new HttpPost(serverUrl() + "/" + id
+			HttpPost postRequest = new HttpPost(getStoreUrl() + "/" + id
 					+ "/_update");
 			String updateQueryString = RequestBuilder.buildUpdateRequest(rec)
 					.convertToString();
@@ -462,12 +449,12 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			HttpGet request = new HttpGet(serverUrl() + "/" + id);
+			HttpGet request = new HttpGet(getStoreUrl() + "/" + id);
 
 			try {
 				response = pool.getHttpGetResponse(request);
 			} catch (Exception e) {
-				logger.info("GET URL: " + serverUrl() + "/" + id);
+				logger.info("GET URL: " + getStoreUrl() + "/" + id);
 				e.printStackTrace();
 				logger.info("Got exception: " + e);
 
@@ -490,7 +477,7 @@ public class ESConnection {
 			br.close();
 			
 			if (response.getStatusLine().getStatusCode() != 200) {
-				logger.info("GET URL: " + serverUrl() + "/" + id);
+				logger.info("GET URL: " + getStoreUrl() + "/" + id);
 				logger.info("Failed : HTTP error code : "
 						+ response.getStatusLine().getStatusCode());
 				logger.info("Retrieve failed : Response: " + temp);
@@ -522,7 +509,7 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 		logger.debug("using get by id");
 		try {
-			HttpGet request = new HttpGet(serverUrl() + "/" + id);
+			HttpGet request = new HttpGet(getStoreUrl() + "/" + id);
 			 URI uri = null;
 			try {
 				uri = new URIBuilder(request.getURI()).addParameter("fields",StringUtils.join(fields,",") ).build();
@@ -531,7 +518,7 @@ public class ESConnection {
 			}catch (URISyntaxException e1) {
 				e1.printStackTrace();
 			} catch (Exception e) {
-				logger.info("GET URL: " + serverUrl() + "/" + id);
+				logger.info("GET URL: " + getStoreUrl() + "/" + id);
 				e.printStackTrace();
 				logger.info("Got exception: " + e);
 
@@ -554,7 +541,7 @@ public class ESConnection {
 			br.close();
 			
 			if (response.getStatusLine().getStatusCode() != 200) {
-				logger.info("GET URL: " + serverUrl() + "/" + id);
+				logger.info("GET URL: " + getStoreUrl() + "/" + id);
 				logger.info("Failed : HTTP error code : "
 						+ response.getStatusLine().getStatusCode());
 				logger.info("Retrieve failed : Response: " + temp);
@@ -585,7 +572,7 @@ public class ESConnection {
 
 		try {
 			// Create the httpClien
-			String deleteUrl = serverUrl() + "/" + id;
+			String deleteUrl = getStoreUrl() + "/" + id;
 			logger.debug("DELETE URL: " + deleteUrl);
 			
 			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
@@ -791,7 +778,7 @@ public class ESConnection {
 		return matchResponse;
 	}
 	
-    public HashMap<String, String> getMapping() {
+    public HashMap<String, String> getMapping(String index, String type) {
         HashMap<String, String> leafSet = new HashMap<String, String>();
         HttpResponse response = null;
         String output;
@@ -800,11 +787,11 @@ public class ESConnection {
         obm.setSerializationInclusion(Inclusion.NON_NULL);
         System.out.println("using get by id");
         try {
-            HttpGet request = new HttpGet(this.server + "/" + this.index + "/_mapping/" + this.type);
+            HttpGet request = new HttpGet(this.server + "/" + index + "/_mapping/" + type);
             try {
                 response = pool.getHttpGetResponse(request);
             } catch (Exception e) {
-                System.out.println("GET URL: " + this.server + "/" + this.index + "/_mapping/" + this.type);
+                System.out.println("GET URL: " + this.server + "/" + index + "/_mapping/" + type);
                 e.printStackTrace();
                 System.out.println("Got exception: " + e);
             }
@@ -824,7 +811,7 @@ public class ESConnection {
             br.close();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                logger.info("GET URL: " + this.server + "/" + this.index + "/_mapping/" + this.type);
+                logger.info("GET URL: " + this.server + "/" + index + "/_mapping/" + type);
                 logger.info("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
                 logger.info("Retrieve failed : Response: " + temp);
             }

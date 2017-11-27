@@ -24,21 +24,18 @@ public class DocumentIndexing {
 	private static ESConnection conn;
 
 	public static void main(String[] args) {
-		if (args.length != 5) {
-			LOGGER.error("usage: DocumentIndexing ><config-path> <server.url> <index> <type> <input.path>");
+		if (args.length != 3) {
+			LOGGER.error("usage: DocumentIndexing ><config-path> <server.url> <input.path>");
 			return;
 		}
 
 		try {
 			Configuration config = MapReduceConfig.loadConfiguration(args[0]);
 			config.set("server.url", args[1]);
-			config.set("server.index", args[2]);
-			config.set("server.type", args[3]);
-			config.set("input.path", args[4]);
+			config.set("input.path", args[2]);
 			headers = config.get("input.header").split(
 					config.get("input.delimiter"));
-			conn = new ESConnection(config.get("server.url"),
-					config.get("server.index"), config.get("server.type"));
+			conn = new ESConnection(config.get("server.url"));
 			indexingDocuments(config);
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			System.out.println("Config file not found: " + args[0]);
