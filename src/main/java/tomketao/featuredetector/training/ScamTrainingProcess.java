@@ -3,8 +3,10 @@ package tomketao.featuredetector.training;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
 
@@ -24,7 +26,11 @@ public class ScamTrainingProcess {
 		
 		LOGGER.info(trainingSetting.getStoreUrl());
 
-		FileReader fileReader = new FileReader(args[1]);
+		learningProcess(knowledge, trainingSetting, args[1]);
+	}
+
+	public static void learningProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
+		FileReader fileReader = new FileReader(inputFile);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;
 
@@ -52,5 +58,4 @@ public class ScamTrainingProcess {
 		knowledge.alignment(trainingSetting);
 		LOGGER.info("Knowledge Base Size after alignment: " + knowledge.size());
 	}
-
 }

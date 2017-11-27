@@ -1,8 +1,8 @@
 {
-  "validSeqRange": 3000,
+  "validSeqRange": 2000,
   "knowledgeLimit": 5000,
-  "rareLimit": 3,
-  "minimumImpact": 0.8,
+  "rareLimit": 2,
+  "minimumImpact": 0.4,
   "keySize": 4,
   "inputDelimiter": "\t",
   "storeUrl": "localhost:9200/fdindex/TEST_STORE"

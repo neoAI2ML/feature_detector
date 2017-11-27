@@ -13,11 +13,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "currentSequence", "currentFeatureCount" })
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
+	public static final Logger LOGGER = LoggerFactory.getLogger(FeatureKnowledge.class);
 	
 	@JsonProperty("currentSequence")
 	private int currentSequence;
@@ -52,7 +55,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData);
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
 		String[] keyWordList = featureDataNormalized
 				.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
@@ -124,6 +127,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 			Integer updateSeq = this.get(item).getUpdateSeqNo();
 			if (updateSeq + trainingSetting.getValidSeqRange() < getCurrentSequence()) {
 				if (this.get(item).getSumOfFTCounts() < trainingSetting.getRareLimit()) {
+//					LOGGER.info("RARE ****** SeqNo:" + updateSeq + "\tFeatureCountSum: " + this.get(item).getSumOfFTCounts() + "\tCurrentSeq:" + getCurrentSequence());
 					rareList.add(item);
 				}
 			}
@@ -158,4 +162,9 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	}
 	
 
+	public void saveKnowledge(){
+		for(Integer key : this.keySet()) {
+			LOGGER.info(this.get(key).convertToStringAsItis());
+		}
+	}
 }
