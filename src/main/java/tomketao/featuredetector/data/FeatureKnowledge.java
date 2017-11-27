@@ -155,7 +155,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 			Integer cur = keyFeatureCount.get(ft);
 			float current = cur == null ? 0 : cur;
 			for(String ft_again : globalFeatureCount.keySet()) {
-				if(!StringUtils.equals(ft, feature)) {
+				if(!StringUtils.equals(ft, ft_again)) {
 					current = current * globalFeatureCount.get(ft_again) / averageGlobalFTCount;
 				}
 			}
