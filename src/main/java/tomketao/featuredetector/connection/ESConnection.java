@@ -105,9 +105,6 @@ public class ESConnection {
 			obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 			try {
-				// Create the httpClien
-				// CloseableHttpClient httpClient =
-				// HttpClientBuilder.create().build();
 				HttpPost postRequest = new HttpPost(scrollUrl());
 				postRequest.setHeader("Content-Type", "application/json");
 				postRequest.setHeader("scroll", timeout);
@@ -115,8 +112,6 @@ public class ESConnection {
 				postRequest.setHeader("scroll_id", scrollId);
 
 				try {
-					// Execute the httpClient
-					// response = httpClient.execute(postRequest);
 					response = pool.getHttpPostResponse(postRequest);
 				} catch (Exception e) {
 					logger.error(e.getMessage());
@@ -161,9 +156,6 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(searchUrl());
 			postRequest.setEntity(new StringEntity(request.convertToString()));
 			logger.debug(request.toString());
@@ -172,8 +164,6 @@ public class ESConnection {
 			postRequest.setHeader("size", sizeStr);
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(postRequest);
 				response = pool.getHttpPostResponse(postRequest);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
@@ -182,8 +172,6 @@ public class ESConnection {
 			if (response.getStatusLine().getStatusCode() != 200) {
 				logger.info("Scroll failed : HTTP error code : "
 						+ response.getStatusLine().getStatusCode());
-				// throw new RuntimeException("Failed : HTTP error code : "
-				// + response.getStatusLine().getStatusCode());
 				return null;
 			}
 
@@ -220,10 +208,8 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-//			CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 			HttpPut putRequest = new HttpPut(serverUrl() + "/" + id);
-//			String reqTemp = RequestBuilder.buildIndexRequest(rec).convertToString();
+
 			putRequest.setEntity(new StringEntity(RequestBuilder
 					.buildIndexRequest(rec).convertToString()));
 			putRequest.setHeader("Content-Type", "application/json");
@@ -288,15 +274,11 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(serverUrl() + "/" + id
 					+ "/_update");
 			String updateQueryString = RequestBuilder.buildUpdateRequest(rec)
 					.convertToString();
-//			logger.info("****Update ID:" + id + " Update Doc: "
-//					+ updateQueryString);
+
 			postRequest.setEntity(new StringEntity(updateQueryString));
 			postRequest.setHeader("Content-Type", "application/json");
 
@@ -366,17 +348,12 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(searchUrl());
 			postRequest.setEntity(new StringEntity(request.convertToString()));
 			logger.debug(request.toString());
 			postRequest.setHeader("Content-Type", "application/json");
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(postRequest);
 				response = pool.getHttpPostResponse(postRequest);
 			} catch (Exception e) {
 				logger.info(e.getMessage());
@@ -426,17 +403,12 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(searchUrl());
 			postRequest.setEntity(new StringEntity(request.convertToString()));
 			logger.debug(request.toString());
 			postRequest.setHeader("Content-Type", "application/json");
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(postRequest);
 				response = pool.getHttpPostResponse(postRequest);
 			} catch (Exception e) {
 				logger.info(e.getMessage());
@@ -490,15 +462,9 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(serverUrl() + "/" + id);
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(request);
-				// HttpGet get = getGetRequest(serverUrl + "/" + id);
 				response = pool.getHttpGetResponse(request);
 			} catch (Exception e) {
 				logger.info("GET URL: " + serverUrl() + "/" + id);
@@ -727,16 +693,11 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(this.searchUrl());
 			postRequest.setEntity(new StringEntity(request.convertToString()));
 			postRequest.setHeader("Content-Type", "application/json");
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(postRequest);
 				response = pool.getHttpPostResponse(postRequest);
 			} catch (Exception e) {
 				logger.info("Http call error : " + e.getMessage());
@@ -785,16 +746,11 @@ public class ESConnection {
 		obm.setSerializationInclusion(Inclusion.NON_NULL);
 
 		try {
-			// Create the httpClien
-			// CloseableHttpClient httpClient =
-			// HttpClientBuilder.create().build();
 			HttpPost postRequest = new HttpPost(this.searchUrl());
 			postRequest.setEntity(new StringEntity(CommonUtils.decodeISO_8859_1AndUtf_8Format(request)));
 			postRequest.setHeader("Content-Type", "application/json");
 
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(postRequest);
 				response = pool.getHttpPostResponse(postRequest);
 			} catch (Exception e) {
 				logger.info("Http call error : " + e.getMessage());
