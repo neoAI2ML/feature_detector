@@ -15,10 +15,9 @@ import tomketao.featuredetector.data.TrainingSetting;
 
 public class ScamTrainingProcess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTrainingProcess.class);
-	private static String delimiter = "\t";
 	static FeatureKnowledge knowledge = new FeatureKnowledge();
 	private static int seq = 0;
-	private static TrainingSetting trainingSetting = new TrainingSetting();
+	private static TrainingSetting trainingSetting;
 
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
 		if (args.length != 2) {
@@ -37,7 +36,7 @@ public class ScamTrainingProcess {
 		while ((line = bufferedReader.readLine()) != null) {
 
 			// read input to get recordid
-			String[] fields = line.split(delimiter);
+			String[] fields = line.split(trainingSetting.getInputDelimiter());
 			if (fields.length == 2) {
 				knowledge.put_feature(fields[0], fields[1], seq);
 			}

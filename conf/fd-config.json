@@ -4,6 +4,6 @@
   "rareLimit": 3,
   "minimumImpact": 0.8,
   "keySize": 4,
-  "inputDelimiter": "&#x9;",
+  "inputDelimiter": "\t",
   "storeUrl": "localhost:9200/fdindex/TEST_STORE"
 }
