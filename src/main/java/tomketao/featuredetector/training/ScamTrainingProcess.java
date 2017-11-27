@@ -6,14 +6,12 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
-import tomketao.featuredetector.util.MapReduceConfig;
 
 public class ScamTrainingProcess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTrainingProcess.class);
@@ -28,13 +26,9 @@ public class ScamTrainingProcess {
 			return;
 		}
 		
-		Configuration config = MapReduceConfig.loadConfiguration(args[0]);
-		delimiter = config.get("input.delimiter");
-		trainingSetting.setKeySize(config.getInt("key.size", 1));
-		trainingSetting.setKnowledgeLimit(config.getInt("knowledge.limit", 5000));
-		trainingSetting.setRareLimit(config.getInt("rare.limit", 1));
-		trainingSetting.setValidSeqRange(config.getInt("sequence.range", 2000));
-		trainingSetting.setMinimumImpact(config.getFloat("minimum.impact", (float) 0.01));
+		trainingSetting = TrainingSetting.loadFromFile(args[0]);
+		
+		LOGGER.info(trainingSetting.getStoreUrl());
 
 		FileReader fileReader = new FileReader(args[1]);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
