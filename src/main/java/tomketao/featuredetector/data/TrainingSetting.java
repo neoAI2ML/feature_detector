@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "validSeqRange", "knowledgeLimit", "rareLimit", "minimumImpact", "keySize", "inputDelimiter", "storeUrl" })
+@JsonPropertyOrder({ "validSeqRange", "knowledgeLimit", "rareLimit", "minimumImpact", "keySize", "inputDelimiter", "storeMetaDataUrl", "storeFeatureDataUrl" })
 public class TrainingSetting  extends FeatureDetectObject {
 	private static final long serialVersionUID = -1675848364528330441L;
 	
@@ -46,20 +46,26 @@ public class TrainingSetting  extends FeatureDetectObject {
 	public void setKeySize(int keySize) {
 		this.keySize = keySize;
 	}
-	
 	public String getInputDelimiter() {
 		return inputDelimiter;
 	}
 	public void setInputDelimiter(String inputDelimiter) {
 		this.inputDelimiter = inputDelimiter;
 	}
-	public String getStoreUrl() {
-		return storeUrl;
+	public String getStoreMetaDataUrl() {
+		return storeMetaDataUrl;
 	}
-	public void setStoreUrl(String storeUrl) {
-		this.storeUrl = storeUrl;
+	public void setStoreMetaDataUrl(String storeMetaDataUrl) {
+		this.storeMetaDataUrl = storeMetaDataUrl;
 	}
-	
+	public String getStoreFeatureDataUrl() {
+		return storeFeatureDataUrl;
+	}
+	public void setStoreFeatureDataUrl(String storeFeatureDataUrl) {
+		this.storeFeatureDataUrl = storeFeatureDataUrl;
+	}
+
+
 	@JsonProperty("validSeqRange")
 	private int validSeqRange;
 	
@@ -78,8 +84,11 @@ public class TrainingSetting  extends FeatureDetectObject {
 	@JsonProperty("inputDelimiter")
 	private String inputDelimiter;
 	
-	@JsonProperty("storeUrl")
-	private String storeUrl;
+	@JsonProperty("storeMetaDataUrl")
+	private String storeMetaDataUrl;
+	
+	@JsonProperty("storeFeatureDataUrl")
+	private String storeFeatureDataUrl;
 	
 	public static TrainingSetting loadFromFile(String filePath) {
 		ObjectMapper obm = new ObjectMapper();

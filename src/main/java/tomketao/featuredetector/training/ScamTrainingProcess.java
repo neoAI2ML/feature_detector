@@ -24,7 +24,8 @@ public class ScamTrainingProcess {
 		
 		trainingSetting = TrainingSetting.loadFromFile(args[0]);
 		
-		LOGGER.info(trainingSetting.getStoreUrl());
+		LOGGER.info(trainingSetting.getStoreMetaDataUrl());
+		LOGGER.info(trainingSetting.getStoreFeatureDataUrl());
 
 		learningProcess(knowledge, trainingSetting, args[1]);
 	}
