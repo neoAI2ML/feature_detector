@@ -8,6 +8,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
 import tomketao.featuredetector.util.CommonUtils;
+import tomketao.featuredetector.util.StaticConstants;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "keyString", "updateSeqNo", "keyHashCode", "sizeInword", "featureCounts" })
@@ -79,5 +80,17 @@ public class FeatureKey extends FeatureDetectObject {
 	
 	public int getSumOfFTCounts() {
 		return CommonUtils.getSumOfFTCounts(featureCounts);
+	}
+	
+	public Map<String, Object> mapForSave() {
+		Map<String, Object> store_map = new HashMap<String, Object>();
+		
+		store_map.put(StaticConstants.KEY, getKeyString());
+		store_map.put(StaticConstants.KEY_HASHCODE, getKeyHashCode());
+		store_map.put(StaticConstants.KEY_SIZE, getSizeInword());
+		store_map.put(StaticConstants.UPDATE_SEQ, getUpdateSeqNo());
+		store_map.putAll(getFeatureCounts());
+		
+		return store_map;
 	}
 }

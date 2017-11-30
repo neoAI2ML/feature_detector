@@ -58,5 +58,7 @@ public class ScamTrainingProcess {
 		//after alignment
 		knowledge.alignment(trainingSetting);
 		LOGGER.info("Knowledge Base Size after alignment: " + knowledge.size());
+		
+		knowledge.save(trainingSetting);
 	}
 }

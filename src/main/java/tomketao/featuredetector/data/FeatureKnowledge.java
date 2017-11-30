@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tomketao.featuredetector.connection.ESConnection;
 import tomketao.featuredetector.util.CommonUtils;
 import tomketao.featuredetector.util.StaticConstants;
 
@@ -155,9 +156,24 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		return dList.get(dList.size() - 1) - dList.get(0);
 	}
 
-	public void saveKnowledge() {
+	public void save(TrainingSetting trainingSetting) {
+		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
+		esMeta.indexing("knowledge", mapForSave());
+		
+		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
+		
 		for (Integer key : this.keySet()) {
+			esFeature.indexing(key.toString(), this.get(key).mapForSave());
 			LOGGER.info(this.get(key).convertToStringAsItis());
 		}
+	}
+	
+	public Map<String, Object> mapForSave() {
+		Map<String, Object> store_map = new HashMap<String, Object>();
+		
+		store_map.put(StaticConstants.UPDATE_SEQ, getCurrentSequence());
+		store_map.putAll(getCurrentFeatureCount());
+		
+		return store_map;
 	}
 }

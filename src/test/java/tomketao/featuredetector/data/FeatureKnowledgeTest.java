@@ -66,7 +66,7 @@ public class FeatureKnowledgeTest {
 
 	@Test
 	public void saveKnowledge() {
-		knowledge.saveKnowledge();
+		knowledge.save(trainingSetting);
 	}
 
 	@Test
