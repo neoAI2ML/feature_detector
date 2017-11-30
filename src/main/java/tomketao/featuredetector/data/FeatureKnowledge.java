@@ -20,11 +20,12 @@ import org.slf4j.LoggerFactory;
 @JsonPropertyOrder({ "currentSequence", "currentFeatureCount" })
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
-	public static final Logger LOGGER = LoggerFactory.getLogger(FeatureKnowledge.class);
-	
+	public static final Logger LOGGER = LoggerFactory
+			.getLogger(FeatureKnowledge.class);
+
 	@JsonProperty("currentSequence")
 	private int currentSequence;
-	
+
 	@JsonProperty("currentFeatureCount")
 	private Map<String, Integer> currentFeatureCount = new HashMap<String, Integer>();
 
@@ -43,8 +44,8 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	public void setCurrentFeatureCount(Map<String, Integer> currentFeatureCount) {
 		this.currentFeatureCount = currentFeatureCount;
 	}
-	
-	public boolean put_feature(String feature, String featureData, int sequence) {
+
+	public boolean put_feature(String feature, String featureData, int sequence, TrainingSetting trainingSetting) {
 		// update knowledge base global variables
 		setCurrentSequence(sequence);
 		Integer featureCount = getCurrentFeatureCount().get(feature);
@@ -55,32 +56,19 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
+				.toLowerCase();
 		String[] keyWordList = featureDataNormalized
 				.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
 
 		for (int i = 0; i < keyWordList.length; i++) {
-			String keyone = wordNormalizer(keyWordList[i]);
-			addKeyFlag = put_feature_key(keyone, feature, sequence, 1);
-
-			if (i + 1 < keyWordList.length) {
-				String keytwo = keyone + StaticConstants.SPACE
-						+ wordNormalizer(keyWordList[i + 1]);
-				addKeyFlag = put_feature_key(keytwo, feature, sequence, 2);
-
-				if (i + 2 < keyWordList.length) {
-					String keythree = keytwo + StaticConstants.SPACE
-							+ wordNormalizer(keyWordList[i + 2]);
-					addKeyFlag = put_feature_key(keythree, feature, sequence, 3);
-
-					if (i + 3 < keyWordList.length) {
-						String keyfour = keythree + StaticConstants.SPACE
-								+ wordNormalizer(keyWordList[i + 3]);
-						addKeyFlag = put_feature_key(keyfour, feature,
-								sequence, 4);
-					}
-				}
+			StringBuilder keyStr = new StringBuilder();
+			for (int j = 0; j < trainingSetting.getKeySize() && i + j < keyWordList.length; j++) {
+				keyStr.append(StaticConstants.SPACE);
+				keyStr.append(wordNormalizer(keyWordList[i + j]));
+				addKeyFlag = put_feature_key(keyStr.substring(1), feature,
+						sequence, j + 1);
 			}
 		}
 
@@ -126,8 +114,11 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		for (Integer item : this.keySet()) {
 			Integer updateSeq = this.get(item).getUpdateSeqNo();
 			if (updateSeq + trainingSetting.getValidSeqRange() < getCurrentSequence()) {
-				if (this.get(item).getSumOfFTCounts() < trainingSetting.getRareLimit()) {
-//					LOGGER.info("RARE ****** SeqNo:" + updateSeq + "\tFeatureCountSum: " + this.get(item).getSumOfFTCounts() + "\tCurrentSeq:" + getCurrentSequence());
+				if (this.get(item).getSumOfFTCounts() < trainingSetting
+						.getRareLimit()) {
+					// LOGGER.info("RARE ****** SeqNo:" + updateSeq +
+					// "\tFeatureCountSum: " + this.get(item).getSumOfFTCounts()
+					// + "\tCurrentSeq:" + getCurrentSequence());
 					rareList.add(item);
 				}
 			}
@@ -140,30 +131,32 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 
 	private void remove_key_wo_impact(TrainingSetting trainingSetting) {
 		List<Integer> listWOImpact = new ArrayList<Integer>();
-		for(Integer keyItem : this.keySet()) {
+		for (Integer keyItem : this.keySet()) {
 			List<Float> probList = new ArrayList<Float>();
-			for(String ft : getCurrentFeatureCount().keySet()) {
-				probList.add(CommonUtils.keyFeatureProbality(ft, this.get(keyItem).getFeatureCounts(), getCurrentFeatureCount()));
+			for (String ft : getCurrentFeatureCount().keySet()) {
+				probList.add(CommonUtils.keyFeatureProbality(ft,
+						this.get(keyItem).getFeatureCounts(),
+						getCurrentFeatureCount()));
 			}
-			
-			if(maximumDifference(probList) < trainingSetting.getMinimumImpact()) {
+
+			if (maximumDifference(probList) < trainingSetting
+					.getMinimumImpact()) {
 				listWOImpact.add(keyItem);
 			}
 		}
-		
-		for(Integer rmKeyitem : listWOImpact) {
+
+		for (Integer rmKeyitem : listWOImpact) {
 			this.remove(rmKeyitem);
 		}
 	}
-	
+
 	private float maximumDifference(List<Float> dList) {
 		Collections.sort(dList);
 		return dList.get(dList.size() - 1) - dList.get(0);
 	}
-	
 
-	public void saveKnowledge(){
-		for(Integer key : this.keySet()) {
+	public void saveKnowledge() {
+		for (Integer key : this.keySet()) {
 			LOGGER.info(this.get(key).convertToStringAsItis());
 		}
 	}

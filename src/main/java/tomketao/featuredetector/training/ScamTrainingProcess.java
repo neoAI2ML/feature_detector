@@ -40,7 +40,7 @@ public class ScamTrainingProcess {
 			// read input to get recordid
 			String[] fields = line.split(trainingSetting.getInputDelimiter());
 			if (fields.length == 2) {
-				knowledge.put_feature(fields[0], fields[1], seq);
+				knowledge.put_feature(fields[0], fields[1], seq, trainingSetting);
 			}
 
 			seq++;
