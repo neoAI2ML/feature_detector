@@ -164,7 +164,6 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		
 		for (Integer key : this.keySet()) {
 			esFeature.indexing(key.toString(), this.get(key).mapForSave());
-			LOGGER.info(this.get(key).convertToStringAsItis());
 		}
 	}
 	
