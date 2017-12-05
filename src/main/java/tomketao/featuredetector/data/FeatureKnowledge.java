@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import tomketao.featuredetector.connection.ESConnection;
+import tomketao.featuredetector.data.response.RespHit;
 import tomketao.featuredetector.util.CommonUtils;
 import tomketao.featuredetector.util.StaticConstants;
 
@@ -57,10 +58,8 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
-				.toLowerCase();
-		String[] keyWordList = featureDataNormalized
-				.split(StaticConstants.SPACE);
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
+		String[] keyWordList = featureDataNormalized.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
 
 		for (int i = 0; i < keyWordList.length; i++) {
@@ -159,6 +158,28 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	public void save(TrainingSetting trainingSetting) {
 		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
 		esMeta.indexing("knowledge", mapForSave());
+		
+		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
+		
+		for (Integer key : this.keySet()) {
+			esFeature.indexing(key.toString(), this.get(key).mapForSave());
+		}
+	}
+	
+	public void load(TrainingSetting trainingSetting) {
+		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
+		RespHit ret = esMeta.retrieve("knowledge");
+		Map<String, Object> metaData = ret.getSource();
+		for(String key : metaData.keySet()) {
+			switch (key) {
+			case StaticConstants.UPDATE_SEQ:
+				setCurrentSequence((Integer) metaData.get(StaticConstants.UPDATE_SEQ));
+				break;
+			default:
+				currentFeatureCount.put(key, (Integer) metaData.get(key));
+			}
+		}
+		
 		
 		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
 		
