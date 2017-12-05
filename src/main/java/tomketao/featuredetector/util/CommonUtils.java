@@ -132,6 +132,16 @@ public class CommonUtils {
 		return adjusted.get(feature) / getSumOfFTAdjustedCounts(adjusted);
 	}
 	
+	public static Map<String, Float> keyProbalities(Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
+		Map<String, Float> adjusted = adjustedFeatureCounts(keyFeatureCount, globalFeatureCount);
+		Map<String, Float> keyProbalities = new HashMap<String, Float>();
+		
+		for(String ft : globalFeatureCount.keySet()) {
+			keyProbalities.put(ft, adjusted.get(ft) / getSumOfFTAdjustedCounts(adjusted));
+		}
+		return keyProbalities;
+	}
+	
 	public static Map<String, Float> adjustedFeatureCounts(Map<String, Integer> keyFeatureCount, Map<String, Integer> globalFeatureCount) {
 		Map<String, Float> adjusted = new HashMap<String, Float>();
 		float averageGlobalFTCount = getSumOfFTCounts(globalFeatureCount) / globalFeatureCount.size();

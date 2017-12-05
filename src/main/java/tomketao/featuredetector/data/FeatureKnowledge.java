@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import tomketao.featuredetector.connection.ESConnection;
+import tomketao.featuredetector.data.match.StringQueryRequest;
+import tomketao.featuredetector.data.response.MatchResponse;
 import tomketao.featuredetector.data.response.RespHit;
 import tomketao.featuredetector.util.CommonUtils;
 import tomketao.featuredetector.util.StaticConstants;
@@ -47,7 +49,8 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		this.currentFeatureCount = currentFeatureCount;
 	}
 
-	public boolean put_feature(String feature, String featureData, int sequence, TrainingSetting trainingSetting) {
+	public boolean put_feature(String feature, String featureData,
+			int sequence, TrainingSetting trainingSetting) {
 		// update knowledge base global variables
 		setCurrentSequence(sequence);
 		Integer featureCount = getCurrentFeatureCount().get(feature);
@@ -58,13 +61,16 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
-		String[] keyWordList = featureDataNormalized.split(StaticConstants.SPACE);
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
+				.toLowerCase();
+		String[] keyWordList = featureDataNormalized
+				.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
 
 		for (int i = 0; i < keyWordList.length; i++) {
 			StringBuilder keyStr = new StringBuilder();
-			for (int j = 0; j < trainingSetting.getKeySize() && i + j < keyWordList.length; j++) {
+			for (int j = 0; j < trainingSetting.getKeySize()
+					&& i + j < keyWordList.length; j++) {
 				keyStr.append(StaticConstants.SPACE);
 				keyStr.append(wordNormalizer(keyWordList[i + j]));
 				addKeyFlag = put_feature_key(keyStr.substring(1), feature,
@@ -73,6 +79,27 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		return addKeyFlag;
+	}
+	
+	public Map<String, Float> feature_probalities(String featureData, TrainingSetting trainingSetting) {
+		Map<String, Float> result = new HashMap<String, Float>();
+		
+		// update knowledge base feature keys
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
+				.toLowerCase();
+		String[] keyWordList = featureDataNormalized
+				.split(StaticConstants.SPACE);
+
+		for (int i = 0; i < keyWordList.length; i++) {
+			StringBuilder keyStr = new StringBuilder();
+			for (int j = 0; j < trainingSetting.getKeySize()
+					&& i + j < keyWordList.length; j++) {
+				keyStr.append(StaticConstants.SPACE);
+				keyStr.append(wordNormalizer(keyWordList[i + j]));
+			}
+		}
+
+		return result;
 	}
 
 	private boolean put_feature_key(String key, String feature, int sequence,
@@ -156,44 +183,78 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	}
 
 	public void save(TrainingSetting trainingSetting) {
-		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
+		ESConnection esMeta = new ESConnection(
+				trainingSetting.getStoreMetaDataUrl());
 		esMeta.indexing("knowledge", mapForSave());
-		
-		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
-		
+
+		ESConnection esFeature = new ESConnection(
+				trainingSetting.getStoreFeatureDataUrl());
+
 		for (Integer key : this.keySet()) {
 			esFeature.indexing(key.toString(), this.get(key).mapForSave());
 		}
 	}
-	
+
 	public void load(TrainingSetting trainingSetting) {
-		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
+		ESConnection esMeta = new ESConnection(
+				trainingSetting.getStoreMetaDataUrl());
 		RespHit ret = esMeta.retrieve("knowledge");
 		Map<String, Object> metaData = ret.getSource();
-		for(String key : metaData.keySet()) {
+		for (String key : metaData.keySet()) {
 			switch (key) {
 			case StaticConstants.UPDATE_SEQ:
-				setCurrentSequence((Integer) metaData.get(StaticConstants.UPDATE_SEQ));
+				setCurrentSequence((Integer) metaData
+						.get(StaticConstants.UPDATE_SEQ));
 				break;
 			default:
 				currentFeatureCount.put(key, (Integer) metaData.get(key));
 			}
 		}
-		
-		
-		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
-		
-		for (Integer key : this.keySet()) {
-			esFeature.indexing(key.toString(), this.get(key).mapForSave());
+
+		ESConnection esFeature = new ESConnection(
+				trainingSetting.getStoreFeatureDataUrl());
+
+		StringQueryRequest stringQuery = StringQueryRequest
+				.loadFromFile("all_query.json");
+		String timeout = "1m";
+		MatchResponse resp = esFeature.scrollStringQuery(
+				stringQuery.convertToString(), timeout);
+		String scroll_id = resp.getScroll_id();
+
+		while (!resp.getHits().getHits().isEmpty()) {
+			for (RespHit hit : resp.getHits().getHits()) {
+				Map<String, Object> featureData = hit.getSource();
+				FeatureKey ft_key = new FeatureKey(
+						(Integer) featureData.get(StaticConstants.KEY_HASHCODE),
+						(String) featureData.get(StaticConstants.KEY),
+						(Integer) featureData.get(StaticConstants.UPDATE_SEQ),
+						(Integer) featureData.get(StaticConstants.KEY_SIZE));
+
+				for (String key : featureData.keySet()) {
+					switch (key) {
+					case StaticConstants.UPDATE_SEQ:
+					case StaticConstants.KEY_HASHCODE:
+					case StaticConstants.KEY:
+					case StaticConstants.KEY_SIZE:
+						break;
+					default:
+						ft_key.getFeatureCounts().put(key,
+								(Integer) featureData.get(key));
+					}
+				}
+				
+				this.put(ft_key.getKeyHashCode(), ft_key);
+			}
+			resp = esFeature.scrollStringQueryNext(scroll_id, timeout);
 		}
 	}
-	
+
 	public Map<String, Object> mapForSave() {
 		Map<String, Object> store_map = new HashMap<String, Object>();
-		
+
 		store_map.put(StaticConstants.UPDATE_SEQ, getCurrentSequence());
 		store_map.putAll(getCurrentFeatureCount());
-		
+
 		return store_map;
 	}
 }

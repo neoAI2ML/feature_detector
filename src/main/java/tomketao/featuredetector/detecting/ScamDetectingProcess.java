@@ -1,4 +1,4 @@
-package tomketao.featuredetector.training;
+package tomketao.featuredetector.detecting;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,12 +10,11 @@ import org.slf4j.LoggerFactory;
 import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
 
-public class ScamTrainingProcess {
-	public static final Logger LOGGER = LoggerFactory.getLogger(ScamTrainingProcess.class);
+public class ScamDetectingProcess {
+	public static final Logger LOGGER = LoggerFactory.getLogger(ScamDetectingProcess.class);
 	static FeatureKnowledge knowledge = new FeatureKnowledge();
-	private static int seq = 0;
 	private static TrainingSetting trainingSetting;
-
+	
 	public static void main(String[] args) throws IOException {
 		if (args.length != 2) {
 			LOGGER.error("usage: ScamTraningProcess <config-path> <input.path>");
@@ -27,10 +26,10 @@ public class ScamTrainingProcess {
 		LOGGER.info(trainingSetting.getStoreMetaDataUrl());
 		LOGGER.info(trainingSetting.getStoreFeatureDataUrl());
 
-		learningProcess(knowledge, trainingSetting, args[1]);
+		detectingProcess(knowledge, trainingSetting, args[1]);
 	}
-
-	public static void learningProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
+	
+	public static void detectingProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
 		knowledge.load(trainingSetting);
 		
 		FileReader fileReader = new FileReader(inputFile);
@@ -42,10 +41,8 @@ public class ScamTrainingProcess {
 			// read input to get recordid
 			String[] fields = line.split(trainingSetting.getInputDelimiter());
 			if (fields.length == 2) {
-				knowledge.put_feature(fields[0].toUpperCase(), fields[1], seq, trainingSetting);
-			}
 
-			seq++;
+			}
 
 			LOGGER.info(line);
 		}
@@ -53,14 +50,5 @@ public class ScamTrainingProcess {
 		// Always close files.
 		fileReader.close();
 		bufferedReader.close();
-		
-		// before alignment
-		LOGGER.info("Knowledge Base Size before alignment: " + knowledge.size());
-		
-		//after alignment
-		knowledge.alignment(trainingSetting);
-		LOGGER.info("Knowledge Base Size after alignment: " + knowledge.size());
-		
-		knowledge.save(trainingSetting);
 	}
 }

@@ -100,13 +100,13 @@ public class MatchRequest extends FeatureDetectObject {
 			inputStream.close();
 			return req;
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
+			logger.debug(e.getMessage());
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
+			logger.debug(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			logger.debug(e.getMessage());
 			e.printStackTrace();
 		}
 

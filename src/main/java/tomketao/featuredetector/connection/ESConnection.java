@@ -53,7 +53,7 @@ public class ESConnection {
 
 	public ESConnection(String storeUrl) {
 		setStoreUrl(storeUrl);
-		int indexOfFirstSlash = getStoreUrl().indexOf('/', 0);
+		int indexOfFirstSlash = getStoreUrl().indexOf('/', 8);
 		this.server = getStoreUrl().substring(0, indexOfFirstSlash);
 	}
 
@@ -81,7 +81,7 @@ public class ESConnection {
 		return getServer() + "/_search/scroll";
 	}
 	
-	public MatchResponse scrollNext(MatchResponse previousResp, String timeout, String sizeStr) {
+	public MatchResponse scrollMatchRequestNext(MatchResponse previousResp, String timeout, String sizeStr) {
 		if(previousResp != null && StringUtils.isNoneBlank(previousResp.getScroll_id())) {
 			String scrollId = previousResp.getScroll_id();
 			HttpResponse response = null;
@@ -134,7 +134,7 @@ public class ESConnection {
 		return null;
 	}
 	
-	public MatchResponse scroll(MatchRequest request, String timeout, String sizeStr) {
+	public MatchResponse scrollMatchRequest(MatchRequest request, String timeout, String sizeStr) {
 		HttpResponse response = null;
 		MatchResponse matchResponse = null;
 		String output;
@@ -181,6 +181,94 @@ public class ESConnection {
 
 		return matchResponse;
 	}
+	
+    public MatchResponse scrollStringQuery(String request, String timeout) {
+        HttpResponse response = null;
+        MatchResponse matchResponse = null;
+        String output;
+        StringBuilder outputBuilder = new StringBuilder();
+        ObjectMapper obm = new ObjectMapper();
+        obm.setSerializationInclusion(Inclusion.NON_NULL);
+
+        try {
+            HttpPost postRequest = new HttpPost(searchUrl() + "?scroll=" + timeout);
+            postRequest.setEntity(new StringEntity(request));
+            logger.debug(request.toString());
+            postRequest.setHeader("Content-Type", "application/json");
+
+            try {
+                response = pool.getHttpPostResponse(postRequest);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                logger.info("Scroll failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+                // throw new RuntimeException("Failed : HTTP error code : "
+                // + response.getStatusLine().getStatusCode());
+                return null;
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+
+            logger.debug("Output from Server .... \n");
+            while ((output = br.readLine()) != null) {
+                outputBuilder.append(output);
+            }
+
+            br.close();
+
+            // Convert the JSON output to DTO Object
+            matchResponse = obm.readValue(outputBuilder.toString(), MatchResponse.class);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return matchResponse;
+    }
+
+    public MatchResponse scrollStringQueryNext(String scrollId, String timeout) {
+        HttpResponse response = null;
+        MatchResponse matchResponse = null;
+        String output;
+        StringBuilder outputBuilder = new StringBuilder();
+        ObjectMapper obm = new ObjectMapper();
+        obm.setSerializationInclusion(Inclusion.NON_NULL);
+        String request = "{\"scroll\" : \"" + timeout + "\", \"scroll_id\" : \"" + scrollId + "\" }";
+
+        try {
+            HttpPost postRequest = new HttpPost(scrollUrl());
+            postRequest.setEntity(new StringEntity(request));
+            postRequest.setHeader("Content-Type", "application/json");
+
+            try {
+                response = pool.getHttpPostResponse(postRequest);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                logger.info("Scroll failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+                return null;
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+
+            logger.debug("Output from Server .... \n");
+            while ((output = br.readLine()) != null) {
+                outputBuilder.append(output);
+            }
+
+            br.close();
+
+            // Convert the JSON output to DTO Object
+            matchResponse = obm.readValue(outputBuilder.toString(), MatchResponse.class);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return matchResponse;
+    }
 
 	public MatchResponse indexing(String id, Map<String, Object> rec) {
 		if(StringUtils.isBlank(id)) {
@@ -203,8 +291,6 @@ public class ESConnection {
 			logger.debug(RequestBuilder.buildIndexRequest(rec).convertToString());
 			
 			try {
-				// Execute the httpClient
-				// response = httpClient.execute(putRequest);
 				response = pool.getHttpPutResponse(putRequest);
 			} catch (Exception e) {
 				logger.info(e.getMessage());
@@ -278,8 +364,6 @@ public class ESConnection {
 						Thread.sleep(5);
 					}
 
-					// Execute the httpClient
-					// response = httpClient.execute(postRequest);
 					response = pool.getHttpPostResponse(postRequest);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -354,8 +438,6 @@ public class ESConnection {
 			if (response.getStatusLine().getStatusCode() != 200) {
 				logger.info("Match Request Match failed : HTTP error code : "
 						+ response.getStatusLine().getStatusCode());
-				// throw new RuntimeException("Failed : HTTP error code : "
-				// + response.getStatusLine().getStatusCode());
 				return null;
 			}
 
@@ -409,8 +491,6 @@ public class ESConnection {
 			if (response.getStatusLine().getStatusCode() != 200) {
 				logger.info("String Query Match failed : HTTP error code : "
 						+ response.getStatusLine().getStatusCode());
-				// throw new RuntimeException("Failed : HTTP error code : "
-				// + response.getStatusLine().getStatusCode());
 				return null;
 			}
 
