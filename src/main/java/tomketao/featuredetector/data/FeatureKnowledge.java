@@ -114,7 +114,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 					}
 				} else {
 					for(String ft: result.keySet()) {
-						result.put(ft, (float) (result.get(ft) + 0.5 * (j + 1)));
+						result.put(ft, (float) (result.get(ft) + (j + 1) / currentFeatureCount.size()));
 					}
 				}
 			}
