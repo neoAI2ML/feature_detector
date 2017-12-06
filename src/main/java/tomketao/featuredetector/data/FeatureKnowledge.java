@@ -83,12 +83,17 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	
 	public Map<String, Float> feature_probalities(String featureData, TrainingSetting trainingSetting) {
 		Map<String, Float> result = new HashMap<String, Float>();
+		for(String ft: currentFeatureCount.keySet()) {
+			result.put(ft, (float) 0);
+		}
 		
 		// update knowledge base feature keys
 		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
 				.toLowerCase();
 		String[] keyWordList = featureDataNormalized
 				.split(StaticConstants.SPACE);
+		
+		int totalWords = 0;
 
 		for (int i = 0; i < keyWordList.length; i++) {
 			StringBuilder keyStr = new StringBuilder();
@@ -96,7 +101,27 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 					&& i + j < keyWordList.length; j++) {
 				keyStr.append(StaticConstants.SPACE);
 				keyStr.append(wordNormalizer(keyWordList[i + j]));
+				
+				int hashCode = keyStr.hashCode();
+				totalWords = totalWords + j + 1;
+				
+				if(this.containsKey(hashCode)) {
+					FeatureKey ft_key = this.get(hashCode);
+					Map<String, Float> k_prob = CommonUtils.keyProbalities(ft_key.getFeatureCounts(), currentFeatureCount);
+					
+					for(String ft: result.keySet()) {
+						result.put(ft, (float) (result.get(ft) + k_prob.get(ft) * ft_key.getSizeInword()));
+					}
+				} else {
+					for(String ft: result.keySet()) {
+						result.put(ft, (float) (result.get(ft) + 0.5 * (j + 1)));
+					}
+				}
 			}
+		}
+		
+		for(String ft: result.keySet()) {
+			result.put(ft, (float) (result.get(ft) / totalWords));
 		}
 
 		return result;
