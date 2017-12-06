@@ -3,6 +3,7 @@ package tomketao.featuredetector.detecting;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,13 @@ public class ScamDetectingProcess {
 		
 		LOGGER.info(trainingSetting.getStoreMetaDataUrl());
 		LOGGER.info(trainingSetting.getStoreFeatureDataUrl());
+		
+		knowledge.load(trainingSetting);
 
 		detectingProcess(knowledge, trainingSetting, args[1]);
 	}
 	
 	public static void detectingProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
-		knowledge.load(trainingSetting);
-		
 		FileReader fileReader = new FileReader(inputFile);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;
@@ -41,7 +42,7 @@ public class ScamDetectingProcess {
 			// read input to get recordid
 			String[] fields = line.split(trainingSetting.getInputDelimiter());
 			if (fields.length == 2) {
-
+				Map<String, Float> result = knowledge.feature_probalities(fields[1], trainingSetting);
 			}
 
 			LOGGER.info(line);

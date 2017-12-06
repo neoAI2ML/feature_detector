@@ -102,7 +102,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 				keyStr.append(StaticConstants.SPACE);
 				keyStr.append(wordNormalizer(keyWordList[i + j]));
 				
-				int hashCode = keyStr.hashCode();
+				int hashCode = keyStr.substring(1).hashCode();
 				totalWords = totalWords + j + 1;
 				
 				if(this.containsKey(hashCode)) {
@@ -110,11 +110,13 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 					Map<String, Float> k_prob = CommonUtils.keyProbalities(ft_key.getFeatureCounts(), currentFeatureCount);
 					
 					for(String ft: result.keySet()) {
-						result.put(ft, (float) (result.get(ft) + k_prob.get(ft) * ft_key.getSizeInword()));
+						Float prob = (float) (result.get(ft) + k_prob.get(ft) * ft_key.getSizeInword());
+						result.put(ft, prob);
 					}
 				} else {
 					for(String ft: result.keySet()) {
-						result.put(ft, (float) (result.get(ft) + (j + 1) / currentFeatureCount.size()));
+						Float prob = result.get(ft) + (float)(j + 1) / currentFeatureCount.size();
+						result.put(ft, prob);
 					}
 				}
 			}

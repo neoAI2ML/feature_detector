@@ -28,6 +28,8 @@ public class ScamTrainingProcess {
 		LOGGER.info(trainingSetting.getStoreFeatureDataUrl());
 
 		learningProcess(knowledge, trainingSetting, args[1]);
+		
+		knowledge.save(trainingSetting);
 	}
 
 	public static void learningProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
@@ -60,7 +62,5 @@ public class ScamTrainingProcess {
 		//after alignment
 		knowledge.alignment(trainingSetting);
 		LOGGER.info("Knowledge Base Size after alignment: " + knowledge.size());
-		
-		knowledge.save(trainingSetting);
 	}
 }
