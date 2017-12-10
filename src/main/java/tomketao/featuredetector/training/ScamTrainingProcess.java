@@ -34,6 +34,7 @@ public class ScamTrainingProcess {
 
 	public static void learningProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
 		knowledge.load(trainingSetting);
+		seq = knowledge.getCurrentSequence() + 1;
 		
 		FileReader fileReader = new FileReader(inputFile);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
