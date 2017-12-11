@@ -27,15 +27,15 @@ public class ScamTrainingProcess {
 		LOGGER.info(trainingSetting.getStoreMetaDataUrl());
 		LOGGER.info(trainingSetting.getStoreFeatureDataUrl());
 
+		knowledge.load(trainingSetting);
+		seq = knowledge.getCurrentSequence() + 1;
+		
 		learningProcess(knowledge, trainingSetting, args[1]);
 		
 		knowledge.save(trainingSetting);
 	}
 
 	public static void learningProcess(FeatureKnowledge knowledge, TrainingSetting trainingSetting, String inputFile) throws IOException {
-		knowledge.load(trainingSetting);
-		seq = knowledge.getCurrentSequence() + 1;
-		
 		FileReader fileReader = new FileReader(inputFile);
 		BufferedReader bufferedReader = new BufferedReader(fileReader);
 		String line;

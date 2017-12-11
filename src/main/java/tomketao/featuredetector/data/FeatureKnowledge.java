@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory;
 @JsonPropertyOrder({ "currentSequence", "currentFeatureCount" })
 public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	private static final long serialVersionUID = -6712633715281112680L;
-	public static final Logger LOGGER = LoggerFactory
-			.getLogger(FeatureKnowledge.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(FeatureKnowledge.class);
 
 	@JsonProperty("currentSequence")
 	private int currentSequence;
@@ -49,8 +48,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		this.currentFeatureCount = currentFeatureCount;
 	}
 
-	public boolean put_feature(String feature, String featureData,
-			int sequence, TrainingSetting trainingSetting) {
+	public boolean put_feature(String feature, String featureData, int sequence, TrainingSetting trainingSetting) {
 		// update knowledge base global variables
 		setCurrentSequence(sequence);
 		Integer featureCount = getCurrentFeatureCount().get(feature);
@@ -61,76 +59,69 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		}
 
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
-				.toLowerCase();
-		String[] keyWordList = featureDataNormalized
-				.split(StaticConstants.SPACE);
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
+		String[] keyWordList = featureDataNormalized.split(StaticConstants.SPACE);
 		boolean addKeyFlag = false;
 
 		for (int i = 0; i < keyWordList.length; i++) {
 			StringBuilder keyStr = new StringBuilder();
-			for (int j = 0; j < trainingSetting.getKeySize()
-					&& i + j < keyWordList.length; j++) {
+			for (int j = 0; j < trainingSetting.getKeySize() && i + j < keyWordList.length; j++) {
 				keyStr.append(StaticConstants.SPACE);
 				keyStr.append(wordNormalizer(keyWordList[i + j]));
-				addKeyFlag = put_feature_key(keyStr.substring(1), feature,
-						sequence, j + 1);
+				addKeyFlag = put_feature_key(keyStr.substring(1), feature, sequence, j + 1);
 			}
 		}
 
 		return addKeyFlag;
 	}
-	
+
 	public Map<String, Float> feature_probalities(String featureData, TrainingSetting trainingSetting) {
 		Map<String, Float> result = new HashMap<String, Float>();
-		for(String ft: currentFeatureCount.keySet()) {
+		for (String ft : currentFeatureCount.keySet()) {
 			result.put(ft, (float) 0);
 		}
-		
+
 		// update knowledge base feature keys
-		String featureDataNormalized = StringUtils.normalizeSpace(featureData)
-				.toLowerCase();
-		String[] keyWordList = featureDataNormalized
-				.split(StaticConstants.SPACE);
-		
+		String featureDataNormalized = StringUtils.normalizeSpace(featureData).toLowerCase();
+		String[] keyWordList = featureDataNormalized.split(StaticConstants.SPACE);
+
 		int totalWords = 0;
 
 		for (int i = 0; i < keyWordList.length; i++) {
 			StringBuilder keyStr = new StringBuilder();
-			for (int j = 0; j < trainingSetting.getKeySize()
-					&& i + j < keyWordList.length; j++) {
+			for (int j = 0; j < trainingSetting.getKeySize() && i + j < keyWordList.length; j++) {
 				keyStr.append(StaticConstants.SPACE);
 				keyStr.append(wordNormalizer(keyWordList[i + j]));
-				
+
 				int hashCode = keyStr.substring(1).hashCode();
 				totalWords = totalWords + j + 1;
-				
-				if(this.containsKey(hashCode)) {
+
+				if (this.containsKey(hashCode)) {
 					FeatureKey ft_key = this.get(hashCode);
-					Map<String, Float> k_prob = CommonUtils.keyProbalities(ft_key.getFeatureCounts(), currentFeatureCount);
-					
-					for(String ft: result.keySet()) {
+					Map<String, Float> k_prob = CommonUtils.keyProbalities(ft_key.getFeatureCounts(),
+							currentFeatureCount);
+
+					for (String ft : result.keySet()) {
 						Float prob = (float) (result.get(ft) + k_prob.get(ft) * ft_key.getSizeInword());
 						result.put(ft, prob);
 					}
 				} else {
-					for(String ft: result.keySet()) {
-						Float prob = result.get(ft) + (float)(j + 1) / currentFeatureCount.size();
+					for (String ft : result.keySet()) {
+						Float prob = result.get(ft) + (float) (j + 1) / currentFeatureCount.size();
 						result.put(ft, prob);
 					}
 				}
 			}
 		}
-		
-		for(String ft: result.keySet()) {
+
+		for (String ft : result.keySet()) {
 			result.put(ft, (float) (result.get(ft) / totalWords));
 		}
 
 		return result;
 	}
 
-	private boolean put_feature_key(String key, String feature, int sequence,
-			int sizeInWords) {
+	private boolean put_feature_key(String key, String feature, int sequence, int sizeInWords) {
 		int hashCode = key.hashCode();
 		boolean newKeyFlag = true;
 		FeatureKey ft_key = this.get(hashCode);
@@ -168,8 +159,7 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		for (Integer item : this.keySet()) {
 			Integer updateSeq = this.get(item).getUpdateSeqNo();
 			if (updateSeq + trainingSetting.getValidSeqRange() < getCurrentSequence()) {
-				if (this.get(item).getSumOfFTCounts() < trainingSetting
-						.getRareLimit()) {
+				if (this.get(item).getSumOfFTCounts() < trainingSetting.getRareLimit()) {
 					// LOGGER.info("RARE ****** SeqNo:" + updateSeq +
 					// "\tFeatureCountSum: " + this.get(item).getSumOfFTCounts()
 					// + "\tCurrentSeq:" + getCurrentSequence());
@@ -188,13 +178,11 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 		for (Integer keyItem : this.keySet()) {
 			List<Float> probList = new ArrayList<Float>();
 			for (String ft : getCurrentFeatureCount().keySet()) {
-				probList.add(CommonUtils.keyFeatureProbality(ft,
-						this.get(keyItem).getFeatureCounts(),
+				probList.add(CommonUtils.keyFeatureProbality(ft, this.get(keyItem).getFeatureCounts(),
 						getCurrentFeatureCount()));
 			}
 
-			if (maximumDifference(probList) < trainingSetting
-					.getMinimumImpact()) {
+			if (maximumDifference(probList) < trainingSetting.getMinimumImpact()) {
 				listWOImpact.add(keyItem);
 			}
 		}
@@ -210,12 +198,10 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	}
 
 	public void save(TrainingSetting trainingSetting) {
-		ESConnection esMeta = new ESConnection(
-				trainingSetting.getStoreMetaDataUrl());
+		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
 		esMeta.indexing("knowledge", mapForSave());
 
-		ESConnection esFeature = new ESConnection(
-				trainingSetting.getStoreFeatureDataUrl());
+		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
 
 		for (Integer key : this.keySet()) {
 			esFeature.indexing(key.toString(), this.get(key).mapForSave());
@@ -223,53 +209,40 @@ public class FeatureKnowledge extends HashMap<Integer, FeatureKey> {
 	}
 
 	public void load(TrainingSetting trainingSetting) {
-		ESConnection esMeta = new ESConnection(
-				trainingSetting.getStoreMetaDataUrl());
+		ESConnection esMeta = new ESConnection(trainingSetting.getStoreMetaDataUrl());
 		RespHit ret = esMeta.retrieve("knowledge");
 		Map<String, Object> metaData = ret.getSource();
 		for (String key : metaData.keySet()) {
-			switch (key) {
-			case StaticConstants.UPDATE_SEQ:
-				setCurrentSequence((Integer) metaData
-						.get(StaticConstants.UPDATE_SEQ));
-				break;
-			default:
+			if (key.equals(StaticConstants.UPDATE_SEQ)) {
+				setCurrentSequence((Integer) metaData.get(StaticConstants.UPDATE_SEQ));
+			} else {
 				currentFeatureCount.put(key, (Integer) metaData.get(key));
 			}
 		}
 
-		ESConnection esFeature = new ESConnection(
-				trainingSetting.getStoreFeatureDataUrl());
+		ESConnection esFeature = new ESConnection(trainingSetting.getStoreFeatureDataUrl());
 
-		StringQueryRequest stringQuery = StringQueryRequest
-				.loadFromFile("all_query.json");
+		StringQueryRequest stringQuery = StringQueryRequest.loadFromFile("all_query.json");
 		String timeout = "1m";
-		MatchResponse resp = esFeature.scrollStringQuery(
-				stringQuery.convertToString(), timeout);
+		MatchResponse resp = esFeature.scrollStringQuery(stringQuery.convertToString(), timeout);
 		String scroll_id = resp.getScroll_id();
 
 		while (!resp.getHits().getHits().isEmpty()) {
 			for (RespHit hit : resp.getHits().getHits()) {
 				Map<String, Object> featureData = hit.getSource();
-				FeatureKey ft_key = new FeatureKey(
-						(Integer) featureData.get(StaticConstants.KEY_HASHCODE),
+				FeatureKey ft_key = new FeatureKey((Integer) featureData.get(StaticConstants.KEY_HASHCODE),
 						(String) featureData.get(StaticConstants.KEY),
 						(Integer) featureData.get(StaticConstants.UPDATE_SEQ),
 						(Integer) featureData.get(StaticConstants.KEY_SIZE));
 
 				for (String key : featureData.keySet()) {
-					switch (key) {
-					case StaticConstants.UPDATE_SEQ:
-					case StaticConstants.KEY_HASHCODE:
-					case StaticConstants.KEY:
-					case StaticConstants.KEY_SIZE:
-						break;
-					default:
-						ft_key.getFeatureCounts().put(key,
-								(Integer) featureData.get(key));
+					if (key.equals(StaticConstants.UPDATE_SEQ) || key.equals(StaticConstants.KEY_HASHCODE)
+							|| key.equals(StaticConstants.KEY) || key.equals(StaticConstants.KEY_SIZE)) {
+					} else {
+						ft_key.getFeatureCounts().put(key, (Integer) featureData.get(key));
 					}
 				}
-				
+
 				this.put(ft_key.getKeyHashCode(), ft_key);
 			}
 			resp = esFeature.scrollStringQueryNext(scroll_id, timeout);
