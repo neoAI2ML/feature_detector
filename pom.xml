@@ -14,7 +14,6 @@
 		<commons-lang3.version>3.3.1</commons-lang3.version>
 		<opencsv.version>2.0</opencsv.version>
 		<logback.version>1.0.13</logback.version>
-		<json.version>1.1</json.version>
 		<httpcomponents.version>4.5.2</httpcomponents.version>
 	</properties>
 	<repositories>
@@ -95,11 +94,6 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>${json.version}</version>
 		</dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>

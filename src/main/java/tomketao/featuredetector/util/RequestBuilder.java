@@ -10,8 +10,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
-import tomketao.featuredetector.config.FieldParams;
-import tomketao.featuredetector.config.MatchConfig;
 import tomketao.featuredetector.data.match.MatchFunctionScoreQuery;
 import tomketao.featuredetector.data.match.QueryString;
 import tomketao.featuredetector.data.match.StringQueryRequest;
@@ -19,7 +17,6 @@ import tomketao.featuredetector.data.request.BooleanQuery;
 import tomketao.featuredetector.data.request.IndexRequest;
 import tomketao.featuredetector.data.request.SearchRequest;
 import tomketao.featuredetector.data.request.UpdateRequest;
-import tomketao.featuredetector.matchbuilder.MatchRequestBuilder;
 
 public class RequestBuilder {
 	private static SearchRequest searchTemplate = SearchRequest
@@ -149,36 +146,6 @@ public class RequestBuilder {
 					strb.append(":[* TO *]");
 				}
 			}
-		}
-		QueryString qryStr = new QueryString();
-		qryStr.setQuery(strb.substring(5));
-		MatchFunctionScoreQuery mfsq = new MatchFunctionScoreQuery();
-		mfsq.setQuery_string(qryStr);
-		rqst.setQuery(mfsq);
-		rqst.setSize("100");
-		return rqst;
-	}
-
-	// temporary.
-	public static StringQueryRequest buildStringQueryRequestWithFuzzy(
-			Map<String, String> request, MatchConfig matchConfig) {
-		StringQueryRequest rqst = new StringQueryRequest();
-		StringBuilder strb = new StringBuilder();
-		for (String key : request.keySet()) {
-			if (StringUtils.isNotBlank(request.get(key))) {
-				strb.append(" AND ");
-				FieldParams fldParams = null;
-				if (matchConfig!= null && matchConfig.getField_params() != null) {
-					fldParams = matchConfig.getField_params().get(key);
-				}
-				strb.append(MatchRequestBuilder.createQueryString(key,
-						request.get(key), fldParams));
-			} else {
-				strb.append(" AND !");
-				strb.append(key);
-				strb.append(":[* TO *]");
-			}
-
 		}
 		QueryString qryStr = new QueryString();
 		qryStr.setQuery(strb.substring(5));
