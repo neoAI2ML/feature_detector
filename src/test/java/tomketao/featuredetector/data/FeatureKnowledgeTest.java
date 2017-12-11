@@ -3,6 +3,8 @@ package tomketao.featuredetector.data;
 import java.io.IOException;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 
@@ -55,6 +57,8 @@ public class FeatureKnowledgeTest {
 			System.out.println(ft + ": " + result.get(ft));
 		}
 		
+		Assert.assertTrue(result.get("SPAM") > result.get("HAM"));
+		
 		System.out.println();
 
 		String dataSpam2 = "WINNER!! As a valued network customer you have been selected to receivea £900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.";
@@ -63,6 +67,8 @@ public class FeatureKnowledgeTest {
 		for(String ft : result2.keySet()) {
 			System.out.println(ft + ": " + result2.get(ft));
 		}
+		
+		Assert.assertTrue(result2.get("SPAM") > result2.get("HAM"));
 
 		System.out.println();
 		
@@ -72,5 +78,18 @@ public class FeatureKnowledgeTest {
 		for(String ft : result3.keySet()) {
 			System.out.println(ft + ": " + result3.get(ft));
 		}
+		
+		Assert.assertTrue(result3.get("SPAM") < result3.get("HAM"));
+		
+		System.out.println();
+		
+		String dataSpam4 = "So ü pay first lar... Then when is da stock comin...";
+		
+		Map<String, Float> result4 = knowledge.feature_probalities(dataSpam4, trainingSetting);
+		for(String ft : result4.keySet()) {
+			System.out.println(ft + ": " + result4.get(ft));
+		}
+		
+		Assert.assertTrue(result4.get("SPAM") < result4.get("HAM"));
 	}
 }
