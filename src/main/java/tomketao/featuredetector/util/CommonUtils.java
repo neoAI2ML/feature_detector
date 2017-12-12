@@ -1,6 +1,7 @@
 package tomketao.featuredetector.util;
 
 import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -107,6 +108,12 @@ public class CommonUtils {
 		} catch (UnsupportedEncodingException e) {
 			return requestString;
 		}
+	}
+	
+	public static String normalize(String requestString) {
+		String subjectString = Normalizer.normalize(requestString, Normalizer.Form.NFD);
+		String resultString = subjectString.replaceAll("[^\\x00-\\x7F]", "");
+		return resultString;
 	}
 	
 	public static int getSumOfFTCounts(Map<String, Integer> ftCounts) {

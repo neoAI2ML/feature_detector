@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import tomketao.featuredetector.data.FeatureKnowledge;
 import tomketao.featuredetector.data.TrainingSetting;
+import tomketao.featuredetector.util.CommonUtils;
 
 public class ScamDetectingProcess {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ScamDetectingProcess.class);
@@ -40,7 +41,7 @@ public class ScamDetectingProcess {
 		while ((line = bufferedReader.readLine()) != null) {
 
 			// read input to get recordid
-			String[] fields = line.split(trainingSetting.getInputDelimiter());
+			String[] fields = CommonUtils.normalize(line).split(trainingSetting.getInputDelimiter());
 			if (fields.length == 2) {
 				Map<String, Float> result = knowledge.feature_probalities(fields[1], trainingSetting);
 			}
