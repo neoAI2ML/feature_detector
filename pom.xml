@@ -5,7 +5,6 @@
   <groupId>tomketao</groupId>
   <artifactId>featuredetector</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
   <name>featuredetector</name>
 
 	<properties>

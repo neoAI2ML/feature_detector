@@ -91,5 +91,16 @@ public class FeatureKnowledgeTest {
 		}
 		
 		Assert.assertTrue(result4.get("SPAM") < result4.get("HAM"));
+		
+		System.out.println();
+		
+		String dataSpam5 = "I see the letter B on my car";
+		
+		Map<String, Float> result5 = knowledge.feature_probalities(dataSpam5, trainingSetting);
+		for(String ft : result5.keySet()) {
+			System.out.println(ft + ": " + result5.get(ft));
+		}
+		
+		Assert.assertTrue(result5.get("SPAM") < result5.get("HAM"));
 	}
 }

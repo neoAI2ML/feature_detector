@@ -2,7 +2,7 @@
   "validSeqRange": 2000,
   "knowledgeLimit": 5000,
   "rareLimit": 2,
-  "minimumImpact": 0.4,
+  "minimumImpact": 0.3,
   "keySize": 4,
   "inputDelimiter": "\t",
   "storeFeatureDataUrl": "http://10.100.166.97:9200/keys/KEYS",
