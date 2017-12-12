@@ -3,7 +3,7 @@ package tomketao.featuredetector.data;
 import java.io.IOException;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
@@ -30,7 +30,7 @@ public class FeatureKnowledgeTest {
 			e.printStackTrace();
 		}
 		
-		knowledge.save(trainingSetting);
+//		knowledge.save(trainingSetting);
 	}
 	
 	@Test

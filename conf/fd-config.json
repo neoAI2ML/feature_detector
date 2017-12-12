@@ -2,9 +2,9 @@
   "validSeqRange": 2000,
   "knowledgeLimit": 5000,
   "rareLimit": 2,
-  "minimumImpact": 0.3,
+  "minimumImpact": 0.2,
   "keySize": 4,
   "inputDelimiter": "\t",
-  "storeFeatureDataUrl": "http://10.100.166.97:9200/keys/KEYS",
-  "storeMetaDataUrl": "http://10.100.166.97:9200/global/GLOBAL"
+  "storeFeatureDataUrl": "http://192.168.157.1:9200/keys/KEYS",
+  "storeMetaDataUrl": "http://192.168.157.1:9200/global/GLOBAL"
 }
