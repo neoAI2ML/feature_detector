@@ -18,7 +18,7 @@ public class ESConnectionTest {
 	}
 
 
-  @Test
+//  @Test
   public void scrollStringRequest() {
 	  StringQueryRequest stringQuery = StringQueryRequest.loadFromFile("all_query.json");
 	  String timeout = "1m";

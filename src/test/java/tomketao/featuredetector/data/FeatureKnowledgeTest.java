@@ -21,7 +21,7 @@ public class FeatureKnowledgeTest {
 
 	}
 
-	@Test
+//	@Test
 	public void saveKnowledge() {
 		try {
 			ScamTrainingProcess.learningProcess(knowledge, trainingSetting,
@@ -33,7 +33,7 @@ public class FeatureKnowledgeTest {
 //		knowledge.save(trainingSetting);
 	}
 	
-	@Test
+//	@Test
 	public void loadKnowledge() {
 		knowledge.load(trainingSetting);
 		
@@ -42,7 +42,7 @@ public class FeatureKnowledgeTest {
 		System.out.println("Size: " + size_data);
 	}
 	
-	@Test
+//	@Test
 	public void featureDetecting() {
 		knowledge.load(trainingSetting);
 		
